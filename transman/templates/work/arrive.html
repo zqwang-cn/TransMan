@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>详细信息</title>
+
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>
+                详细信息
+			</h1>
+			<ul>
+				<li>
+                    {{rec.car_no}}
+				</li>
+				<li>
+                    {{rec.driver_name}}
+				</li>
+				<li>
+                    {{rec.contact_info}}
+				</li>
+				<li>
+                    {{ rec.mine.name }}
+				</li>
+				<li>
+                    {{ rec.coal_type.name }}
+				</li>
+			</ul>
+		<div class="col-md-12">
+			<form role="form" action="/work/weight" method="POST">
+				{% csrf_token %}
+				<div class="form-group">
+                    <input type="hidden" name="qrcode" value="{{ rec.qrcode }}">
+					<label>
+                        矿发量
+					</label>
+					<input type="text" class="form-control" name="setoff_amount">
+				</div>
+				<div class="form-group">
+					<label>
+                        实收量
+					</label>
+					<input type="text" class="form-control" name="arrive_amount">
+				</div>
+				<button type="submit" class="btn btn-default">
+                    确定
+				</button>
+			</form>
+		</div>
+		</div>
+	</div>
+</div>
+
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

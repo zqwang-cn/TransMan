@@ -7,7 +7,7 @@ def home(request):
     if request.user.is_authenticated():
         group=request.user.groups.all()[0].name
         if group=='a':
-            return redirect('/work/a')
+            return redirect('/work/list')
         if group=='b':
             return redirect('/work/b')
         if group=='c':

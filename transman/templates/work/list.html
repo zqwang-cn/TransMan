@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>查看记录</title>
+
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>
+                查看所有记录
+			</h1>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+                           ID
+						</th>
+						<th>
+                            车牌号
+						</th>
+						<th>
+                            驾驶员姓名
+						</th>
+						<th>
+                            联系方式
+						</th>
+						<th>
+                            煤矿
+						</th>
+						<th>
+                            煤种类
+						</th>
+                        <th>
+                            出发时间
+                        </th>
+
+                        <th>
+                            矿发量
+                        </th>
+                        <th>
+                            实收量
+                        </th>
+                        <th>
+                            到达时间
+                        </th>
+                        <th>
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                    {% for rec in recs %}
+					<tr>
+						<td>
+                            {{ rec.id }}
+						</td>
+						<td>
+                            {{ rec.car_no }}
+						</td>
+						<td>
+                            {{ rec.driver_name }}
+						</td>
+						<td>
+                            {{ rec.contact_info }}
+						</td>
+						<td>
+                            {{ rec.mine.name }}
+						</td>
+						<td>
+                            {{ rec.coal_type.name }}
+						</td>
+						<td>
+                            {{ rec.setoff_time }}
+						</td>
+
+						<td>
+                            {{ rec.setoff_amount }}
+						</td>
+						<td>
+                            {{ rec.arrive_amount }}
+						</td>
+						<td>
+                            {{ rec.arrive_time }}
+						</td>
+						<td>
+                            <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">
+                                查看详情
+                            </a>
+						</td>
+					</tr>
+                    {% endfor %}
+				</tbody>
+			</table> 
+<div class="pagination">
+    <span class="step-links">
+        {% if recs.has_previous %}
+            <a href="?page={{ recs.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ recs.number }} of {{ recs.paginator.num_pages }}.
+        </span>
+
+        {% if recs.has_next %}
+            <a href="?page={{ recs.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+<br>
+            <a role="button" href="new" class="btn btn-default">
+                新建记录
+            </a>
+		</div>
+	</div>
+</div>
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>

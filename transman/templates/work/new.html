@@ -43,6 +43,17 @@
 					</label>
 					<input type="text" class="form-control" name="contact_info">
 				</div>
+                <input type="hidden" name="mine_id" value="{{mine_id}}">
+				<div class="form-group">
+					<label>
+                        煤类型
+					</label>
+                    <select name="coal_type_id" class="form-control">
+                        {% for coal_type in coal_types %}
+                        <option value="{{coal_type.id}}">{{coal_type.name}}</option>
+                        {% endfor %}
+                    </select>
+				</div>
 				<button type="submit" class="btn btn-default">
 					生成新记录
 				</button>
