@@ -21,6 +21,7 @@ class TransRec(models.Model):
     setoff_time=models.DateTimeField(auto_now=True)
     arrive_time=models.DateTimeField(null=True)
     qrcode=models.CharField(max_length=10,null=True,unique=True)
+    payed=models.BooleanField(default=False)
 
 class UserMine(models.Model):
     user=models.ForeignKey(User)

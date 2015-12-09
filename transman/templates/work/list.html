@@ -53,6 +53,9 @@
                             到达时间
                         </th>
                         <th>
+                            是否已付款
+                        </th>
+                        <th>
                         </th>
 					</tr>
 				</thead>
@@ -89,6 +92,9 @@
 						</td>
 						<td>
                             {{ rec.arrive_time }}
+						</td>
+						<td>
+                            {{ rec.payed }}
 						</td>
 						<td>
                             <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">

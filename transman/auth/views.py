@@ -9,9 +9,9 @@ def home(request):
         if group=='a':
             return redirect('/work/list')
         if group=='b':
-            return redirect('/work/b')
+            return redirect('/work/scan')
         if group=='c':
-            return redirect('/work/c')
+            return redirect('/work/scan')
     return render(request,'auth/login.html',{})
 
 def logout(request):

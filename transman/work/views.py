@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import TransRec,CoalType,UserMine,Mine
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
+from decimal import Decimal
 
 # Create your views here.
 def list(request):
@@ -16,12 +17,6 @@ def list(request):
     except EmptyPage:
         recs=paginator.page(paginator.num_pages)
     return render(request,'work/list.html',{'recs':recs})
-
-def b(request):
-    return HttpResponse('b')
-
-def c(request):
-    return HttpResponse('c')
 
 def new(request):
     coal_types=CoalType.objects.all()
@@ -56,7 +51,12 @@ def detail(request):
     return render(request,'work/detail.html',{'rec':rec})
 
 def scan(request):
-    return render(request,'work/scan.html',{})
+    group=request.user.groups.all()[0].name
+    if group=='b':
+        action='/work/arrive'
+    elif group=='c':
+        action='/work/cal'
+    return render(request,'work/scan.html',{'action':action})
 
 def arrive(request):
     qrcode=request.GET.get('qrcode')
@@ -74,3 +74,18 @@ def weight(request):
     rec.arrive_time=arrive_time
     rec.save()
     return HttpResponse('success')
+
+def cal(request):
+    qrcode=request.GET.get('qrcode')
+    rec=TransRec.objects.get(qrcode=qrcode)
+    total=float(rec.coal_type.unit)*rec.arrive_amount
+    return render(request,'work/cal.html',{'rec':rec,'total':total})
+
+def pay(request):
+    qrcode=request.POST.get('qrcode')
+    rec=TransRec.objects.get(qrcode=qrcode)
+    total=float(rec.coal_type.unit)*rec.arrive_amount
+    rec.mine.balance-=Decimal(total)
+    rec.payed=True
+    rec.save()
+    return HttpResponse('pay success')
