@@ -4,13 +4,14 @@ from django.contrib import auth
 
 # Create your views here.
 def home(request):
-    if request.user.is_authenticated():
-        group=request.user.groups.all()[0].name
-        if group=='a':
+    user=request.user
+    if user.is_authenticated():
+        print user.has_perm('work.mine')
+        if user.has_perm('work.mine'):
             return redirect('/work/list')
-        if group=='b':
+        if user.has_perm('work.scale'):
             return redirect('/work/scan')
-        if group=='c':
+        if user.has_perm('work.account'):
             return redirect('/work/scan')
     return render(request,'auth/login.html',{})
 

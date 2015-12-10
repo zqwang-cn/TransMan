@@ -10,6 +10,10 @@ class CoalType(models.Model):
     name=models.CharField(max_length=10)
     unit=models.DecimalField(max_digits=10,decimal_places=2)
 
+class UserMine(models.Model):
+    user=models.ForeignKey(User)
+    mine=models.ForeignKey(Mine)
+
 class TransRec(models.Model):
     car_no=models.CharField(max_length=10)
     driver_name=models.CharField(max_length=10)
@@ -22,7 +26,9 @@ class TransRec(models.Model):
     arrive_time=models.DateTimeField(null=True)
     qrcode=models.CharField(max_length=10,null=True,unique=True)
     payed=models.BooleanField(default=False)
-
-class UserMine(models.Model):
-    user=models.ForeignKey(User)
-    mine=models.ForeignKey(Mine)
+    class Meta:
+        permissions=(
+            ('mine','mine permission'),
+            ('scale','scale permission'),
+            ('account','account permission'),
+        )

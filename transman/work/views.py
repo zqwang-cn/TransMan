@@ -4,8 +4,10 @@ from .models import TransRec,CoalType,UserMine,Mine
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from decimal import Decimal
+from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
+@permission_required('work.mine',raise_exception=True)
 def list(request):
     all_recs=TransRec.objects.all()
     paginator=Paginator(all_recs,5)
@@ -18,6 +20,7 @@ def list(request):
         recs=paginator.page(paginator.num_pages)
     return render(request,'work/list.html',{'recs':recs})
 
+@permission_required('work.mine',raise_exception=True)
 def new(request):
     coal_types=CoalType.objects.all()
     mine=UserMine.objects.get(user=request.user).mine
@@ -27,6 +30,7 @@ def new(request):
         'coal_types':coal_types
     })
 
+@permission_required('work.mine',raise_exception=True)
 def create(request):
     car_no=request.POST.get('car_no')
     driver_name=request.POST.get('driver_name')
@@ -45,24 +49,27 @@ def create(request):
     rec.save()
     return redirect('/work/detail?qrcode='+str(rec.qrcode))
 
+@permission_required('work.mine',raise_exception=True)
 def detail(request):
     qrcode=request.GET.get('qrcode')
     rec=TransRec.objects.get(qrcode=qrcode)
     return render(request,'work/detail.html',{'rec':rec})
 
 def scan(request):
-    group=request.user.groups.all()[0].name
-    if group=='b':
+    user=request.user
+    if user.has_perm('work.scale'):
         action='/work/arrive'
-    elif group=='c':
+    elif user.has_perm('work.account'):
         action='/work/cal'
     return render(request,'work/scan.html',{'action':action})
 
+@permission_required('work.scale',raise_exception=True)
 def arrive(request):
     qrcode=request.GET.get('qrcode')
     rec=TransRec.objects.get(qrcode=qrcode)
     return render(request,'work/arrive.html',{'rec':rec})
 
+@permission_required('work.scale',raise_exception=True)
 def weight(request):
     setoff_amount=request.POST.get('setoff_amount')
     arrive_amount=request.POST.get('arrive_amount')
@@ -75,12 +82,14 @@ def weight(request):
     rec.save()
     return HttpResponse('success')
 
+@permission_required('work.account',raise_exception=True)
 def cal(request):
     qrcode=request.GET.get('qrcode')
     rec=TransRec.objects.get(qrcode=qrcode)
     total=float(rec.coal_type.unit)*rec.arrive_amount
     return render(request,'work/cal.html',{'rec':rec,'total':total})
 
+@permission_required('work.account',raise_exception=True)
 def pay(request):
     qrcode=request.POST.get('qrcode')
     rec=TransRec.objects.get(qrcode=qrcode)
