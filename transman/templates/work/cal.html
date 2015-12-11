@@ -49,8 +49,12 @@
 				<li>
                     total: {{ total }}
 				</li>
+                <li>
+                    payed:{{rec.payed}}
+                </li>
 			</ul>
 		</div>
+        {% if not rec.payed %}
 		<div class="col-md-12">
 			<form role="form" action="/work/pay" method="POST">
 				{% csrf_token %}
@@ -60,6 +64,7 @@
 				</button>
 			</form>
 		</div>
+        {% endif %}
 	</div>
 </div>
 

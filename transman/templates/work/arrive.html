@@ -35,6 +35,8 @@
                     {{ rec.coal_type.name }}
 				</li>
 			</ul>
+		</div>
+        {% if not rec.arrive_amount %}
 		<div class="col-md-12">
 			<form role="form" action="/work/weight" method="POST">
 				{% csrf_token %}
@@ -56,7 +58,7 @@
 				</button>
 			</form>
 		</div>
-		</div>
+        {% endif %}
 	</div>
 </div>
 

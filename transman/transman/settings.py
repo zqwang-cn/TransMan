@@ -97,6 +97,10 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+LANGUAGES = (
+  ('zh_CN', 'Chinese'),
+)
+
 USE_L10N = True
 
 USE_TZ = True

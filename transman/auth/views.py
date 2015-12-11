@@ -6,7 +6,6 @@ from django.contrib import auth
 def home(request):
     user=request.user
     if user.is_authenticated():
-        print user.has_perm('work.mine')
         if user.has_perm('work.mine'):
             return redirect('/work/list')
         if user.has_perm('work.scale'):
