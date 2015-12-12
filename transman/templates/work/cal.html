@@ -14,59 +14,68 @@
 
     <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-12">
-			<h1>
+        <div class="col-md-1">
+        </div>
+		<div class="col-md-10">
+			<h1 class="text-center">
                 详细信息
 			</h1>
 			<ul>
 				<li>
-                    {{rec.car_no}}
+                    车牌号：{{rec.car_no}}
 				</li>
 				<li>
-                    {{rec.driver_name}}
+                    驾驶员姓名：{{rec.driver_name}}
 				</li>
 				<li>
-                    {{rec.contact_info}}
+                    联系方式：{{rec.contact_info}}
 				</li>
 				<li>
-                    {{ rec.mine.name }}
+                    发货煤矿：{{ rec.mine.name }}
 				</li>
 				<li>
-                    {{ rec.coal_type.name }}
+                    煤类型：{{ rec.coal_type.name }}
 				</li>
 				<li>
-                    {{ rec.setoff_amount }}
+                    矿发量：{{ rec.setoff_amount }}
 				</li>
 				<li>
-                    {{ rec.setoff_time }}
+                    出发时间：{{ rec.setoff_time|date:"Y-m-d H:i:s" }}
 				</li>
 				<li>
-                    {{ rec.arrive_amount }}
+                    实收量：{{ rec.arrive_amount }}
 				</li>
 				<li>
-                    {{ rec.arrive_time }}
+                    到达时间：{{ rec.arrive_time|date:"Y-m-d H:i:s" }}
 				</li>
 				<li>
-                    total: {{ total }}
+                    总价：{{ total }}
 				</li>
                 <li>
-                    payed:{{rec.payed}}
+                    是否已付款：{{rec.payed}}
                 </li>
 			</ul>
-		</div>
-        {% if not rec.payed %}
-		<div class="col-md-12">
-			<form role="form" action="/work/pay" method="POST">
-				{% csrf_token %}
+            {% if not rec.payed %}
+		    <div class="col-md-12">
+		    	<form role="form" action="/work/pay" method="POST">
+		    		{% csrf_token %}
                     <input type="hidden" name="qrcode" value="{{ rec.qrcode }}">
-				<button type="submit" class="btn btn-default">
-                    付款
-				</button>
-			</form>
+                    <div class="buttons">
+		    		    <button type="submit" class="btn btn-default">
+                            付款
+		    		    </button>
+                        <a role="button" href="list" class="btn btn-default">
+                            返回列表
+                        </a>
+                    </div>
+		    	</form>
+		    </div>
+            {% endif %}
 		</div>
-        {% endif %}
+        <div class="col-md-1">
+        </div>
 	</div>
-</div>
+    </div>
 
     <script src="/static/jquery.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>

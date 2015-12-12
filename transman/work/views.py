@@ -1,18 +1,24 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import TransRec,CoalType,UserMine,Mine
+from .models import TransRec,CoalType,Mine
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from decimal import Decimal
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
-from .forms import *
+from .forms import ScanForm
 
 # Create your views here.
-@permission_required('work.mine',raise_exception=True)
+@login_required
 def list(request):
-    all_recs=TransRec.objects.all()
+    user=request.user
+    if not hasattr(user,'userinfo'):
+        all_recs=TransRec.objects.order_by('-id').all()
+    elif user.userinfo.mine:
+        all_recs=TransRec.objects.filter(mine=user.userinfo.mine).order_by('-id')
+    elif user.userinfo.scale:
+        all_recs=TransRec.objects.filter(scale=user.userinfo.scale).order_by('-id')
     paginator=Paginator(all_recs,5)
     page=request.GET.get('page')
     try:
@@ -25,14 +31,14 @@ def list(request):
 
 @permission_required('work.mine',raise_exception=True)
 def new(request):
-    coal_types=CoalType.objects.all()
+    user=request.user
     try:
-        mine=UserMine.objects.get(user=request.user).mine
+        mine=user.userinfo.mine
     except ObjectDoesNotExist:
         return HttpResponse('user not assigned a mine')
-    mine_id=mine.id
+    coal_types=CoalType.objects.all()
     return render(request,'work/new.html',{
-        'mine_id':mine_id,
+        'mine':mine,
         'coal_types':coal_types
     })
 
@@ -66,7 +72,6 @@ def create(request):
     rec.save()
     return redirect('/work/detail?qrcode='+str(rec.qrcode))
 
-@permission_required('work.mine',raise_exception=True)
 def detail(request):
     qrcode=request.GET.get('qrcode')
     try:
@@ -83,12 +88,12 @@ def scan(request):
         action='/work/cal'
     else:
         raise PermissionDenied
-    if request.method=='POST':
-        form=ScanForm(request.POST)
-        if form.is_valid():
-            return HttpResponse(form.cleaned_data['qrcode'])
-    else:
-        form=ScanForm()
+    #if request.method=='POST':
+    #    form=ScanForm(request.POST)
+    #    if form.is_valid():
+    #        return HttpResponse(form.cleaned_data['qrcode'])
+    #else:
+    form=ScanForm()
     return render(request,'work/scan.html',{
         'form':form,
         'action':action
@@ -105,6 +110,8 @@ def arrive(request):
 
 @permission_required('work.scale',raise_exception=True)
 def weight(request):
+    user=request.user
+    scale=user.userinfo.scale
     setoff_amount=request.POST.get('setoff_amount')
     arrive_amount=request.POST.get('arrive_amount')
     qrcode=request.POST.get('qrcode')
@@ -119,6 +126,7 @@ def weight(request):
     rec.setoff_amount=setoff_amount
     rec.arrive_amount=arrive_amount
     rec.arrive_time=datetime.datetime.now()
+    rec.scale=scale
     rec.save()
     return HttpResponse('scaled')
 

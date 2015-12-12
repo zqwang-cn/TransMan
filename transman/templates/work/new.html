@@ -8,18 +8,19 @@
     <title>新建</title>
 
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
 
   </head>
   <body>
 
     <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-12 text-center">
+        <div class="col-md-2">
+        </div>
+		<div class="col-md-8">
 			<h1>
 				建立新记录
 			</h1>
-		</div>
-		<div class="col-md-12">
 			<form role="form" action="/work/create" method="POST">
 				{% csrf_token %}
 				<div class="form-group">
@@ -40,7 +41,13 @@
 					</label>
 					<input type="text" class="form-control" name="contact_info">
 				</div>
-                <input type="hidden" name="mine_id" value="{{mine_id}}">
+				<div class="form-group">
+					<label>
+                        出发煤矿
+					</label>
+                    <input type="text" class="form-control" name="mine" value="{{ mine.name }}" readonly="true">
+				</div>
+                <input type="hidden" name="mine_id" value="{{mine.id}}">
 				<div class="form-group">
 					<label>
                         煤类型
@@ -51,11 +58,18 @@
                         {% endfor %}
                     </select>
 				</div>
-				<button type="submit" class="btn btn-default">
-					生成新记录
-				</button>
+                <div class="buttons">
+				    <button type="submit" class="btn btn-default">
+				    	生成新记录
+				    </button>
+                    <a role="button" href="list" class="btn btn-default">
+                        返回列表
+                    </a>
+                <div>
 			</form>
 		</div>
+        <div class="col-md-2">
+        </div>
 	</div>
     </div>
 

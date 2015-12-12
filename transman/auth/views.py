@@ -6,12 +6,7 @@ from django.contrib import auth
 def home(request):
     user=request.user
     if user.is_authenticated():
-        if user.has_perm('work.mine'):
-            return redirect('/work/list')
-        if user.has_perm('work.scale'):
-            return redirect('/work/scan')
-        if user.has_perm('work.account'):
-            return redirect('/work/scan')
+        return redirect('/work/list')
     return render(request,'auth/login.html',{})
 
 def logout(request):

@@ -8,14 +8,17 @@
     <title>查看记录</title>
 
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
 
   </head>
   <body>
 
     <div class="container-fluid">
 	<div class="row">
-		<div class="col-md-12">
-			<h1>
+        <div class="col-md-1">
+        </div>
+		<div class="col-md-10">
+            <h1>
                 查看所有记录
 			</h1>
 			<table class="table">
@@ -50,6 +53,9 @@
                             实收量
                         </th>
                         <th>
+                            磅
+                        </th>
+                        <th>
                             到达时间
                         </th>
                         <th>
@@ -81,7 +87,7 @@
                             {{ rec.coal_type.name }}
 						</td>
 						<td>
-                            {{ rec.setoff_time }}
+                            {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
 						</td>
 
 						<td>
@@ -90,11 +96,14 @@
 						<td>
                             {{ rec.arrive_amount }}
 						</td>
+                        <td>
+                            {{rec.scale.name }}
+                        </td>
 						<td>
-                            {{ rec.arrive_time }}
+                            {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
 						</td>
 						<td>
-                            {{ rec.payed }}
+                            {{ rec.payed|yesno:"是,否" }}
 						</td>
 						<td>
                             <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">
@@ -105,26 +114,38 @@
                     {% endfor %}
 				</tbody>
 			</table> 
-<div class="pagination">
-    <span class="step-links">
-        {% if recs.has_previous %}
-            <a href="?page={{ recs.previous_page_number }}">previous</a>
-        {% endif %}
 
-        <span class="current">
-            Page {{ recs.number }} of {{ recs.paginator.num_pages }}.
-        </span>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if recs.has_previous %}
+                        <a href="?page={{ recs.previous_page_number }}">previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ recs.number }} of {{ recs.paginator.num_pages }}.
+                    </span>
+            
+                    {% if recs.has_next %}
+                        <a href="?page={{ recs.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+            <br>
 
-        {% if recs.has_next %}
-            <a href="?page={{ recs.next_page_number }}">next</a>
-        {% endif %}
-    </span>
-</div>
-<br>
-            <a role="button" href="new" class="btn btn-default">
-                新建记录
-            </a>
+            <div class="buttons">
+                <a role="button" href="new" class="btn btn-default">
+                    新建记录
+                </a>
+                <a role="button" href="scan" class="btn btn-default">
+                    扫二维码
+                </a>
+                <a role="button" href="/auth/logout" class="btn btn-default">
+                    注销
+                </a>
+            </div>
 		</div>
+        <div class="col-md-1">
+        </div>
 	</div>
 </div>
     <script src="/static/jquery.min.js"></script>
