@@ -1,24 +1,24 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import TransRec,CoalType,Mine
+from .models import TransRec,CoalType,Mine,Scale
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from decimal import Decimal
 from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
-from .forms import ScanForm
+from .forms import ScanForm,NewForm,ArriveForm
 
 # Create your views here.
 @login_required
 def list(request):
     user=request.user
-    if not hasattr(user,'userinfo'):
+    if user.has_perm('work.account'):
         all_recs=TransRec.objects.order_by('-id').all()
-    elif user.userinfo.mine:
-        all_recs=TransRec.objects.filter(mine=user.userinfo.mine).order_by('-id')
-    elif user.userinfo.scale:
-        all_recs=TransRec.objects.filter(scale=user.userinfo.scale).order_by('-id')
+    elif user.has_perm('work.mine'):
+        all_recs=TransRec.objects.filter(mine__user=user).order_by('-id')
+    elif user.has_perm('work.scale'):
+        all_recs=TransRec.objects.filter(scale__user=user).order_by('-id')
     paginator=Paginator(all_recs,5)
     page=request.GET.get('page')
     try:
@@ -32,45 +32,55 @@ def list(request):
 @permission_required('work.mine',raise_exception=True)
 def new(request):
     user=request.user
-    try:
-        mine=user.userinfo.mine
-    except ObjectDoesNotExist:
-        return HttpResponse('user not assigned a mine')
-    coal_types=CoalType.objects.all()
+    if request.method=='POST':
+        form=NewForm(Mine.objects.filter(user=user),request.POST)
+        if form.is_valid():
+            qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
+            while TransRec.objects.filter(qrcode=qrcode).exists():
+                qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
+            rec=TransRec()
+            rec.car_no=form.cleaned_data['car_no']
+            rec.driver_name=form.cleaned_data['driver_name']
+            rec.contact_info=form.cleaned_data['contact_info']
+            rec.mine=form.cleaned_data['mine']
+            rec.coal_type=form.cleaned_data['coal_type']
+            rec.qrcode=qrcode
+            rec.save()
+            return redirect('/work/detail?qrcode='+str(rec.qrcode))
+    form=NewForm(Mine.objects.filter(user=user))
     return render(request,'work/new.html',{
-        'mine':mine,
-        'coal_types':coal_types
+        'form':form
     })
 
-@permission_required('work.mine',raise_exception=True)
-def create(request):
-    car_no=request.POST.get('car_no')
-    driver_name=request.POST.get('driver_name')
-    contact_info=request.POST.get('contact_info')
-    mine_id=request.POST.get('mine_id')
-    coal_type_id=request.POST.get('coal_type_id')
-    if not car_no or not driver_name or not contact_info or not mine_id or not coal_type_id:
-        return HttpResponse('info not full')
-    rec=TransRec()
-    try:
-        mine=Mine.objects.get(pk=long(mine_id))
-    except ObjectDoesNotExist:
-        return HttpResponse('no such mine')
-    try:
-        coal_type=CoalType.objects.get(pk=long(coal_type_id))
-    except ObjectDoesNotExist:
-        return HttpResponse('no such coal type')
-    qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
-    while TransRec.objects.filter(qrcode=qrcode).exists():
-        qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
-    rec.qrcode=qrcode
-    rec.car_no=car_no
-    rec.driver_name=driver_name
-    rec.contact_info=contact_info
-    rec.mine=mine
-    rec.coal_type=coal_type
-    rec.save()
-    return redirect('/work/detail?qrcode='+str(rec.qrcode))
+#@permission_required('work.mine',raise_exception=True)
+#def create(request):
+#    car_no=request.POST.get('car_no')
+#    driver_name=request.POST.get('driver_name')
+#    contact_info=request.POST.get('contact_info')
+#    mine_id=request.POST.get('mine_id')
+#    coal_type_id=request.POST.get('coal_type_id')
+#    if not car_no or not driver_name or not contact_info or not mine_id or not coal_type_id:
+#        return HttpResponse('info not full')
+#    rec=TransRec()
+#    try:
+#        mine=Mine.objects.get(pk=long(mine_id))
+#    except ObjectDoesNotExist:
+#        return HttpResponse('no such mine')
+#    try:
+#        coal_type=CoalType.objects.get(pk=long(coal_type_id))
+#    except ObjectDoesNotExist:
+#        return HttpResponse('no such coal type')
+#    qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
+#    while TransRec.objects.filter(qrcode=qrcode).exists():
+#        qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
+#    rec.qrcode=qrcode
+#    rec.car_no=car_no
+#    rec.driver_name=driver_name
+#    rec.contact_info=contact_info
+#    rec.mine=mine
+#    rec.coal_type=coal_type
+#    rec.save()
+#    return redirect('/work/detail?qrcode='+str(rec.qrcode))
 
 def detail(request):
     qrcode=request.GET.get('qrcode')
@@ -101,12 +111,17 @@ def scan(request):
 
 @permission_required('work.scale',raise_exception=True)
 def arrive(request):
+    if request.method=='POST':
+        form=ArriveForm(request.POST)
+        if form.is_valid():
+            return HttpResponse('success')
+    form=ArriveForm()
     qrcode=request.GET.get('qrcode')
     try:
         rec=TransRec.objects.get(qrcode=qrcode)
     except ObjectDoesNotExist:
         return HttpResponse('no such qrcode')
-    return render(request,'work/arrive.html',{'rec':rec})
+    return render(request,'work/arrive.html',{'form':form,'rec':rec})
 
 @permission_required('work.scale',raise_exception=True)
 def weight(request):

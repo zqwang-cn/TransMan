@@ -1,79 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>新建</title>
+        <title>新建</title>
 
-    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/style.css" rel="stylesheet">
+        <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/style.css" rel="stylesheet">
 
-  </head>
-  <body>
-
-    <div class="container-fluid">
-	<div class="row">
-        <div class="col-md-2">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8">
+                    <h1>
+                        建立新记录
+                    </h1>
+                    <form role="form" action="/work/new" method="POST">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <!--<div class="form-group">
+                            <label>
+                                车牌号
+                            </label>
+                            <input type="text" class="form-control" name="car_no">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                驾驶员姓名
+                            </label>
+                            <input type="text" class="form-control" name="driver_name">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                联系方式
+                            </label>
+                            <input type="text" class="form-control" name="contact_info">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                出发煤矿
+                            </label>
+                            <input type="text" class="form-control" name="mine" value="{{ mine.name }}" readonly="true">
+                        </div>
+                        <input type="hidden" name="mine_id" value="{{mine.id}}">
+                        <div class="form-group">
+                            <label>
+                                煤类型
+                            </label>
+                            <select name="coal_type_id" class="form-control">
+                                {% for coal_type in coal_types %}
+                                <option value="{{coal_type.id}}">{{coal_type.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>-->
+                        <div class="buttons">
+                            <button type="submit" class="btn btn-default">
+                                生成新记录
+                            </button>
+                            <a role="button" href="list" class="btn btn-default">
+                                返回列表
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
         </div>
-		<div class="col-md-8">
-			<h1>
-				建立新记录
-			</h1>
-			<form role="form" action="/work/create" method="POST">
-				{% csrf_token %}
-				<div class="form-group">
-					<label>
-						车牌号
-					</label>
-					<input type="text" class="form-control" name="car_no">
-				</div>
-				<div class="form-group">
-					<label>
-						驾驶员姓名
-					</label>
-					<input type="text" class="form-control" name="driver_name">
-				</div>
-				<div class="form-group">
-					<label>
-						联系方式
-					</label>
-					<input type="text" class="form-control" name="contact_info">
-				</div>
-				<div class="form-group">
-					<label>
-                        出发煤矿
-					</label>
-                    <input type="text" class="form-control" name="mine" value="{{ mine.name }}" readonly="true">
-				</div>
-                <input type="hidden" name="mine_id" value="{{mine.id}}">
-				<div class="form-group">
-					<label>
-                        煤类型
-					</label>
-                    <select name="coal_type_id" class="form-control">
-                        {% for coal_type in coal_types %}
-                        <option value="{{coal_type.id}}">{{coal_type.name}}</option>
-                        {% endfor %}
-                    </select>
-				</div>
-                <div class="buttons">
-				    <button type="submit" class="btn btn-default">
-				    	生成新记录
-				    </button>
-                    <a role="button" href="list" class="btn btn-default">
-                        返回列表
-                    </a>
-                <div>
-			</form>
-		</div>
-        <div class="col-md-2">
-        </div>
-	</div>
-    </div>
 
-    <script src="/static/jquery.min.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-  </body>
+        <script src="/static/jquery.min.js"></script>
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/script.js"></script>
+    </body>
 </html>
