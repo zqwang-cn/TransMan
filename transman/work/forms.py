@@ -39,6 +39,9 @@ class NewForm(forms.ModelForm):
         }
 
 class ArriveForm(forms.ModelForm):
+    def __init__(self,qrcode,*args,**kwargs):
+        super(ArriveForm,self).__init__(*args,**kwargs)
+        self.fields['qrcode']=forms.CharField(widget=forms.HiddenInput(),initial=qrcode)
     class Meta:
         model=TransRec
         fields=[
@@ -49,3 +52,35 @@ class ArriveForm(forms.ModelForm):
             'setoff_amount':'矿发量',
             'arrive_amount':'实收量'
         }
+
+class PayForm(forms.ModelForm):
+    def __init__(self,qrcode,*args,**kwargs):
+        super(PayForm,self).__init__(*args,**kwargs)
+        self.fields['qrcode']=forms.CharField(widget=forms.HiddenInput(),initial=qrcode)
+    class Meta:
+        model=TransRec
+        fields=[
+            'card',
+            'cash',
+        ]
+        labels={
+            'card':'付油卡',
+            'cash':'付现金'
+        }
+        
+#class RecForm(forms.ModelForm):
+#    class Meta:
+#        model=TransRec
+#        labels={
+#            'car_no':'车牌号',
+#            'driver_name':'驾驶员姓名',
+#            'contact_info':'联系方式',
+#            'mine':'出发煤矿',
+#            'coal_type':'煤类型',
+#            'setoff_time':'出发时间',
+#            'setoff_amount':'矿发量',
+#            'arrive_amount':'实收量',
+#            'arrive_time':'到达时间',
+#            'card':'油卡',
+#            'cash':'现金'
+#        }

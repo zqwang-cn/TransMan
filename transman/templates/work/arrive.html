@@ -40,19 +40,6 @@
                     <form role="form" action="/work/arrive" method="POST">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <!--<input type="hidden" name="qrcode" value="{{ rec.qrcode }}">
-                        <div class="form-group">
-                            <label>
-                                矿发量
-                            </label>
-                            <input type="text" class="form-control" name="setoff_amount">
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                实收量
-                            </label>
-                            <input type="text" class="form-control" name="arrive_amount">
-                        </div>-->
                         <div class="buttons">
                             <button type="submit" class="btn btn-default">
                                 确定
