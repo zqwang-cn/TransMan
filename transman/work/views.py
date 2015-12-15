@@ -1,9 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import TransRec,CoalType,Mine,Scale,Shipment
+from .models import TransRec,CoalType,Mine,Scale,Shipment,Balance
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
-from decimal import Decimal
 from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
@@ -28,6 +27,7 @@ def list(request):
     except EmptyPage:
         recs=paginator.page(paginator.num_pages)
     return render(request,'work/list.html',{'recs':recs})
+    print len(recs)
 
 @permission_required('work.mine',raise_exception=True)
 def new(request):
@@ -118,6 +118,8 @@ def arrive(request):
             rec.arrive_amount=form.cleaned_data['arrive_amount']
             rec.arrive_time=datetime.datetime.now()
             rec.scale=request.user.scale
+            shipment=Shipment.objects.get(coal_type=rec.coal_type,mine=rec.mine,scale=rec.scale)
+            rec.unit=shipment.unit
             rec.save()
             return HttpResponse('scaled')
 
@@ -166,24 +168,74 @@ def arrive(request):
 @permission_required('work.account',raise_exception=True)
 def pay(request):
     if request.method=='POST':
-        form=PayForm(None,request.POST)
+        form=PayForm(request.POST)
         if form.is_valid():
             qrcode=form.cleaned_data['qrcode']
             try:
                 rec=TransRec.objects.get(qrcode=qrcode)
             except ObjectDoesNotExist:
                 return HttpResponse('no such qrcode')
-            card=form.cleaned_data['card']
-            cash=form.cleaned_data['cash']
-            #rec.save()
-            return HttpResponse('pay success')
-
-    qrcode=request.GET.get('qrcode')
-    try:
-        rec=TransRec.objects.get(qrcode=qrcode)
-    except ObjectDoesNotExist:
-        return HttpResponse('no such qrcode')
-    unit=Shipment.objects.filter(coal_type=rec.coal,mine=rec.mine,scale=rec.scale)
-    total=unit*rec.arrive_amount
-    form=PayForm(qrcode)
-    return render(request,'work/pay.html',{'form':form,'rec':rec})
+            total=rec.unit*rec.arrive_amount
+            payfor=form.cleaned_data['payfor']
+            if payfor=='both':
+                if rec.card_payed or rec.cash_payed:
+                    return HttpResponse('already payed one')
+                card=form.cleaned_data['card']
+                if card.value>total:
+                    return HttpResponse('more than total')
+                if card.balance==0:
+                    return HttpResponse('no enough card')
+                cash=total-card.value
+                balance=Balance.objects.all()[0]
+                if cash>balance:
+                    return HttpResponse('no enough balance')
+                rec.card=card
+                rec.card_payed=True
+                rec.cash=cash
+                rec.cash_payed=True
+                rec.save()
+                balance-=cash
+                balance.save()
+                if card.value>0:
+                    card.balance-=1
+                    card.save()
+                return HttpResponse('pay success')
+            elif payfor=='card':
+                if rec.card_payed:
+                    return HttpResponse('already payed')
+                card=form.cleaned_data['card']
+                if rec.cash_payed:
+                    cash=rec.cash
+                else:
+                    cash=0
+                if cash+card.value>total:
+                    return HttpResponse('more than total')
+                rec.card=card
+                rec.card_payed=True
+                rec.save()
+                return HttpResponse('success')
+            elif payfor=='cash':
+                if rec.cash_payed:
+                    return HttpResponse('already payed')
+                if rec.card_payed:
+                    card=rec.card
+                else:
+                    card=form.cleaned_data['card']
+                cash=total-card.value
+                if cash<0:
+                    return HttpResponse('more than total')
+                rec.cash=cash
+                rec.cash_payed=True
+                rec.save()
+                return HttpResponse('success')
+        else:
+            return HttpResponse('not valid')
+    else:
+        qrcode=request.GET.get('qrcode')
+        try:
+            rec=TransRec.objects.get(qrcode=qrcode)
+        except ObjectDoesNotExist:
+            return HttpResponse('no such qrcode')
+        total=rec.unit*rec.arrive_amount
+        form=PayForm(initial={'qrcode':qrcode})
+        return render(request,'work/pay.html',{'form':form,'rec':rec,'total':total})

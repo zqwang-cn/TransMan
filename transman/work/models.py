@@ -40,13 +40,22 @@ class Shipment(models.Model):
     def __unicode__(self):
         return '_'.join([self.coal_type.name,self.mine.name,self.scale.name,str(self.unit)])
 
-class CardValue(models.Model):
+class Card(models.Model):
     value=models.PositiveIntegerField('价值')
+    balance=models.PositiveIntegerField('余量',default=0)
     class Meta:
         verbose_name='油卡'
         verbose_name_plural='油卡'
     def __unicode__(self):
         return str(self.value)
+
+class Balance(models.Model):
+    balance=models.FloatField(default=0)
+    class Meta:
+        verbose_name='余额'
+        verbose_name_plural='余额'
+    def __unicode__(self):
+        return str(self.balance)
 
 class TransRec(models.Model):
     car_no=models.CharField(max_length=10)
@@ -61,9 +70,12 @@ class TransRec(models.Model):
     arrive_amount=models.FloatField(null=True)
     scale=models.ForeignKey(Scale,null=True)
     arrive_time=models.DateTimeField(null=True)
+    unit=models.FloatField(null=True)
 
-    card=models.ForeignKey(CardValue,null=True)
+    card=models.ForeignKey(Card,null=True)
     cash=models.FloatField(null=True)
+    card_payed=models.BooleanField(default=False)
+    cash_payed=models.BooleanField(default=False)
     class Meta:
         permissions=(
             ('mine','mine'),

@@ -13,10 +13,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='CardValue',
+            name='Card',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('value', models.PositiveIntegerField(verbose_name=b'\xe4\xbb\xb7\xe5\x80\xbc')),
+                ('balance', models.PositiveIntegerField(default=0, verbose_name=b'\xe4\xbd\x99\xe9\x87\x8f')),
             ],
             options={
                 'verbose_name': '\u6cb9\u5361',
@@ -59,6 +60,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Shipment',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('unit', models.FloatField(verbose_name=b'\xe8\xbf\x90\xe8\xb4\xb9\xe5\x8d\x95\xe4\xbb\xb7')),
+                ('coal_type', models.ForeignKey(verbose_name=b'\xe7\x85\xa4\xe7\xb1\xbb\xe5\x9e\x8b', to='work.CoalType')),
+                ('mine', models.ForeignKey(verbose_name=b'\xe5\x87\xba\xe5\x8f\x91\xe7\x85\xa4\xe7\x9f\xbf', to='work.Mine')),
+                ('scale', models.ForeignKey(verbose_name=b'\xe5\x88\xb0\xe8\xbe\xbe\xe7\xa3\x85\xe6\x88\xbf', to='work.Scale')),
+            ],
+            options={
+                'verbose_name': '\u8fd0\u8d39',
+                'verbose_name_plural': '\u8fd0\u8d39',
+            },
+        ),
+        migrations.CreateModel(
             name='TransRec',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -71,7 +86,9 @@ class Migration(migrations.Migration):
                 ('arrive_amount', models.FloatField(null=True)),
                 ('arrive_time', models.DateTimeField(null=True)),
                 ('cash', models.FloatField(null=True)),
-                ('card', models.ForeignKey(to='work.CardValue', null=True)),
+                ('card_payed', models.BooleanField(default=False)),
+                ('cash_payed', models.BooleanField(default=False)),
+                ('card', models.ForeignKey(to='work.Card', null=True)),
                 ('coal_type', models.ForeignKey(to='work.CoalType')),
                 ('mine', models.ForeignKey(to='work.Mine')),
                 ('scale', models.ForeignKey(to='work.Scale', null=True)),

@@ -1,6 +1,6 @@
 #coding:utf-8
 from django import forms
-from .models import TransRec
+from .models import TransRec,Card
 
 class ScanForm(forms.Form):
     qrcode=forms.CharField(label=("二维码 "),required=True)
@@ -53,20 +53,10 @@ class ArriveForm(forms.ModelForm):
             'arrive_amount':'实收量'
         }
 
-class PayForm(forms.ModelForm):
-    def __init__(self,qrcode,*args,**kwargs):
-        super(PayForm,self).__init__(*args,**kwargs)
-        self.fields['qrcode']=forms.CharField(widget=forms.HiddenInput(),initial=qrcode)
-    class Meta:
-        model=TransRec
-        fields=[
-            'card',
-            'cash',
-        ]
-        labels={
-            'card':'付油卡',
-            'cash':'付现金'
-        }
+class PayForm(forms.Form):
+    qrcode=forms.CharField(widget=forms.HiddenInput())
+    payfor=forms.CharField(widget=forms.HiddenInput())
+    card=forms.ModelChoiceField(label=('油卡 '),queryset=Card.objects.all())
         
 #class RecForm(forms.ModelForm):
 #    class Meta:
