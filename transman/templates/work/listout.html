@@ -37,43 +37,13 @@
                                     联系方式
                                 </th>
                                 <th>
-                                    煤矿
-                                </th>
-                                <th>
                                     煤种类
                                 </th>
                                 <th>
                                     出发时间
                                 </th>
-
                                 <th>
-                                    矿发量
-                                </th>
-                                <th>
-                                    实收量
-                                </th>
-                                <th>
-                                    磅
-                                </th>
-                                <th>
-                                    到达时间
-                                </th>
-                                <th>
-                                    运费单价
-                                </th>
-                                <th>
-                                    油卡
-                                </th>
-                                <th>
-                                    油卡已付
-                                </th>
-                                <th>
-                                    现金
-                                </th>
-                                <th>
-                                    现金已付
-                                </th>
-                                <th>
+                                    出货量
                                 </th>
                             </tr>
                         </thead>
@@ -93,46 +63,13 @@
                                     {{ rec.contact_info }}
                                 </td>
                                 <td>
-                                    {{ rec.mine.name }}
-                                </td>
-                                <td>
                                     {{ rec.coal_type.name }}
                                 </td>
                                 <td>
                                     {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
                                 </td>
-
                                 <td>
                                     {{ rec.setoff_amount }}
-                                </td>
-                                <td>
-                                    {{ rec.arrive_amount }}
-                                </td>
-                                <td>
-                                    {{rec.scale.name }}
-                                </td>
-                                <td>
-                                    {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
-                                </td>
-                                <td>
-                                    {{ rec.unit }}
-                                </td>
-                                <td>
-                                    {{ rec.card.value }}
-                                </td>
-                                <td>
-                                    {{ rec.card_payed }}
-                                </td>
-                                <td>
-                                    {{ rec.cash }}
-                                </td>
-                                <td>
-                                    {{ rec.cash_payed }}
-                                </td>
-                                <td>
-                                    <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">
-                                        查看详情
-                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -173,11 +110,11 @@
                                 {{ cash_sum }}
                             </div>
                             <div class="panel-heading">
-                                已付油卡数：
+                                已付油卡总额：
                             </div>
                             <div class="panel-body">
                                 {% for card in card_sums %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
+                                <p>{{card.0}}: {{card.1}}</p>
                                 {% endfor %}
                             </div>
                             <div class="panel-heading">
@@ -191,7 +128,7 @@
                             </div>
                             <div class="panel-body">
                                 {% for card in card_balances %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
+                                <p>{{card.0}}: {{card.1}}</p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -204,9 +141,6 @@
                         </a>
                         <a role="button" href="out" class="btn btn-default">
                             出货
-                        </a>
-                        <a role="button" href="listout" class="btn btn-default">
-                            出货记录
                         </a>
                         <a role="button" href="scan" class="btn btn-default">
                             扫二维码

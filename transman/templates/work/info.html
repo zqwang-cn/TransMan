@@ -4,34 +4,23 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="refresh" content="5;url=/">
 
-        <title>新建</title>
+        <title>{{ title }}</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
 
     </head>
     <body>
+
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-2">
                 </div>
                 <div class="col-md-8">
-                    <h1>
-                        新建出货记录
-                    </h1>
-                    <form role="form" action="/work/new" method="POST">
-                        {% csrf_token %}
-                        {{form.as_p}}
-                        <div class="buttons">
-                            <button type="submit" class="btn btn-default">
-                                生成出货记录
-                            </button>
-                            <a role="button" href="list" class="btn btn-default">
-                                返回列表
-                            </a>
-                        </div>
-                    </form>
+                    <h2>{{ content }}</h2>
+                    <h3>5秒后自动跳至列表......</h3>
                 </div>
                 <div class="col-md-2">
                 </div>
@@ -40,6 +29,7 @@
 
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-        <script src="/static/script.js"></script>
+        <script>
+        </script>
     </body>
 </html>

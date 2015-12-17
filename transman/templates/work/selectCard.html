@@ -17,7 +17,7 @@
         <div class="col-md-1">
         </div>
 		<div class="col-md-10">
-			<h1>
+			<h1 class="text-center">
                 详细信息
 			</h1>
             <div class="panel-group">
@@ -53,25 +53,11 @@
                         {{rec.coal_type.name}}
                     </div>
                     <div class="panel-heading">
-                        目标磅房：
-                    </div>
-                    <div class="panel-body">
-                        {{rec.scale.name}}
-                    </div>
-                    <div class="panel-heading">
                         出发时间：
                     </div>
                     <div class="panel-body">
                         {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
                     </div>
-                    <div class="panel-heading">
-                        二维码：
-                    </div>
-                    <div class="panel-body">
-                        <div id="qrcode">
-                        </div>
-                    </div>
-
                     <div class="panel-heading">
                         矿发量：
                     </div>
@@ -85,55 +71,46 @@
                         {{ rec.arrive_amount }}
                     </div>
                     <div class="panel-heading">
+                        到达磅：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.scale.name}}
+                    </div>
+                    <div class="panel-heading">
                         到达时间：
                     </div>
-
                     <div class="panel-body">
                         {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
                     </div>
                     <div class="panel-heading">
-                        油卡：
+                        总运费：
                     </div>
                     <div class="panel-body">
-                        {{ rec.card.value }}
-                    </div>
-                    <div class="panel-heading">
-                        油卡已付：
-                    </div>
-                    <div class="panel-body">
-                        {{ rec.card_payed|yesno:"是,否" }}
-                    </div>
-                    <div class="panel-heading">
-                        现金：
-                    </div>
-                    <div class="panel-body">
-                        {{ rec.cash }}
-                    </div>
-                    <div class="panel-heading">
-                        现金已付：
-                    </div>
-                    <div class="panel-body">
-                        {{ rec.cash_payed|yesno:"是,否" }}
+                        {{ total }}
                     </div>
                 </div>
             </div>
-
-            <div class="buttons">
-                <a role="button" href="list" class="btn btn-default">
-                    返回列表
-                </a>
-            <div>
+		    <div class="col-md-12">
+		    	<form role="form" id="form" action="/work/selectCard" method="POST">
+		    		{% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="buttons">
+		    		    <button type="submit" class="btn btn-default">
+                            选择油卡
+		    		    </button>
+                        <a role="button" href="list" class="btn btn-default">
+                            返回列表
+                        </a>
+                    </div>
+		    	</form>
+		    </div>
 		</div>
         <div class="col-md-1">
         </div>
 	</div>
-</div>
+    </div>
 
     <script src="/static/jquery.min.js"></script>
-    <script src="/static/jquery.qrcode.min.js"></script>
-    <script>
-        $('#qrcode').qrcode("{{rec.qrcode}}")
-    </script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/script.js"></script>
   </body>

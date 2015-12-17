@@ -20,38 +20,88 @@
 			<h1 class="text-center">
                 详细信息
 			</h1>
-			<ul>
-				<li>
-                    车牌号：{{rec.car_no}}
-				</li>
-				<li>
-                    驾驶员姓名：{{rec.driver_name}}
-				</li>
-				<li>
-                    联系方式：{{rec.contact_info}}
-				</li>
-				<li>
-                    发货煤矿：{{ rec.mine.name }}
-				</li>
-				<li>
-                    煤类型：{{ rec.coal_type.name }}
-				</li>
-				<li>
-                    矿发量：{{ rec.setoff_amount }}
-				</li>
-				<li>
-                    出发时间：{{ rec.setoff_time|date:"Y-m-d H:i:s" }}
-				</li>
-				<li>
-                    实收量：{{ rec.arrive_amount }}
-				</li>
-				<li>
-                    到达时间：{{ rec.arrive_time|date:"Y-m-d H:i:s" }}
-				</li>
-				<li>
-                    总运费：{{ total }}
-				</li>
-			</ul>
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        车牌号：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.car_no}}
+                    </div>
+                    <div class="panel-heading">
+                        驾驶员姓名：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.driver_name}}
+                    </div>
+                    <div class="panel-heading">
+                        联系方式：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.contact_info}}
+                    </div>
+                    <div class="panel-heading">
+                        发货煤矿：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.mine.name}}
+                    </div>
+                    <div class="panel-heading">
+                        煤类型：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.coal_type.name}}
+                    </div>
+                    <div class="panel-heading">
+                        出发时间：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
+                    </div>
+                    <div class="panel-heading">
+                        矿发量：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.setoff_amount }}
+                    </div>
+                    <div class="panel-heading">
+                        实收量：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.arrive_amount }}
+                    </div>
+                    <div class="panel-heading">
+                        到达磅：
+                    </div>
+                    <div class="panel-body">
+                        {{rec.scale.name}}
+                    </div>
+                    <div class="panel-heading">
+                        到达时间：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
+                    </div>
+                    <div class="panel-heading">
+                        总运费：
+                    </div>
+                    <div class="panel-body">
+                        {{ total }}
+                    </div>
+                    <div class="panel-heading">
+                        应付油卡：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.card.value }}
+                    </div>
+                    <div class="panel-heading">
+                        应付现金：
+                    </div>
+                    <div class="panel-body">
+                        {{ rec.cash }}
+                    </div>
+                </div>
+            </div>
 		    <div class="col-md-12">
 		    	<form role="form" id="form" action="/work/pay" method="POST">
 		    		{% csrf_token %}

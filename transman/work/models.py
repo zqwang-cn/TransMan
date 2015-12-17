@@ -61,7 +61,7 @@ class TransRec(models.Model):
     car_no=models.CharField(max_length=10)
     driver_name=models.CharField(max_length=10)
     contact_info=models.CharField(max_length=20)
-    mine=models.ForeignKey(Mine)
+    mine=models.ForeignKey(Mine,null=True)
     coal_type=models.ForeignKey(CoalType)
     setoff_time=models.DateTimeField(auto_now_add=True)
     qrcode=models.CharField(max_length=10,null=True,unique=True)
