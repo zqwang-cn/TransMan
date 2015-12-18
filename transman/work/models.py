@@ -14,6 +14,7 @@ class Mine(models.Model):
 
 class Scale(models.Model):
     name=models.CharField('名称',max_length=50)
+    out_unit=models.FloatField('出货单价')
     user=models.OneToOneField(User,on_delete=models.CASCADE,verbose_name='用户')
     class Meta:
         verbose_name='磅房'
@@ -82,3 +83,12 @@ class TransRec(models.Model):
             ('scale','scale'),
             ('account','account'),
         )
+
+class OutRec(models.Model):
+    car_no=models.CharField(max_length=10)
+    driver_name=models.CharField(max_length=10)
+    contact_info=models.CharField(max_length=20)
+    unit=models.FloatField()
+    amount=models.FloatField()
+    setoff_time=models.DateTimeField(auto_now_add=True)
+    qrcode=models.CharField(max_length=10,blank=True,unique=True)

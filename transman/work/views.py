@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render,redirect
-from .models import TransRec,CoalType,Mine,Scale,Shipment,Balance,Card
+from .models import TransRec,CoalType,Mine,Scale,Shipment,Balance,Card,OutRec
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from django.contrib.auth.decorators import permission_required,login_required
@@ -10,7 +10,7 @@ from django.db.models import Sum
 
 def randqr():
     qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
-    while TransRec.objects.filter(qrcode=qrcode).exists():
+    while TransRec.objects.filter(qrcode=qrcode).exists() or OutRec.objects.filter(qrcode=qrcode).exists():
         qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
     return qrcode
 
@@ -57,7 +57,7 @@ def list(request):
 
 @permission_required('work.account',raise_exception=True)
 def listout(request):
-    all_recs=TransRec.objects.filter(mine__isnull=True).order_by('-id').all()
+    all_recs=OutRec.objects.order_by('-id').all()
     paginator=Paginator(all_recs,5)
     page=request.GET.get('page')
     try:
@@ -86,21 +86,20 @@ def new(request):
 @permission_required('work.account',raise_exception=True)
 def out(request):
     if request.method=='POST':
-        print request.POST['car_no']
-        print request.POST['driver_name']
-        print request.POST['contact_info']
-        print request.POST['coal_type']
-        print request.POST['setoff_amount']
         form=OutForm(request.POST)
         if form.is_valid():
-            rec=TransRec()
-            rec.car_no=form.cleaned_data['car_no']
-            rec.driver_name=form.cleaned_data['driver_name']
-            rec.contact_info=form.cleaned_data['contact_info']
-            rec.coal_type=form.cleaned_data['coal_type']
-            rec.setoff_amount=form.cleaned_data['setoff_amount']
-            rec.save()
-            return render(request,'work/info.html',{'title':'成功','content':'出货成功'})
+            qrcode=form.cleaned_data['qrcode']
+            if not qrcode:
+                rec=form.save(commit=False)
+                rec.unit=request.user.scale.out_unit
+                rec.qrcode=randqr()
+                rec.save()
+                return render(request,'work/info.html',{'title':'成功','content':'出货成功'})
+            else:
+                if OutRec.objects.filter(qrcode=qrcode).exists():
+                    pass
+                else:
+                    return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
         else:
             return render(request,'work/info.html',{'title':'错误','content':'表格填写错误'})
     form=OutForm()

@@ -37,9 +37,6 @@
                                     联系方式
                                 </th>
                                 <th>
-                                    煤种类
-                                </th>
-                                <th>
                                     出发时间
                                 </th>
                                 <th>
@@ -63,13 +60,10 @@
                                     {{ rec.contact_info }}
                                 </td>
                                 <td>
-                                    {{ rec.coal_type.name }}
-                                </td>
-                                <td>
                                     {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
                                 </td>
                                 <td>
-                                    {{ rec.setoff_amount }}
+                                    {{ rec.amount }}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -94,53 +88,9 @@
                     </div>
                     <br>
 
-                    {% if showsum %}
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                总收货量：
-                            </div>
-                            <div class="panel-body">
-                                {{ arrive_amount_sum }}
-                            </div>
-                            <div class="panel-heading">
-                                已付现金总额：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_sum }}
-                            </div>
-                            <div class="panel-heading">
-                                已付油卡总额：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_sums %}
-                                <p>{{card.0}}: {{card.1}}</p>
-                                {% endfor %}
-                            </div>
-                            <div class="panel-heading">
-                                现金余额：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_balance }}
-                            </div>
-                            <div class="panel-heading">
-                                油卡余额：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_balances %}
-                                <p>{{card.0}}: {{card.1}}</p>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
                     <div class="buttons">
-                        <a role="button" href="new" class="btn btn-default">
-                            新建记录
-                        </a>
                         <a role="button" href="out" class="btn btn-default">
-                            出货
+                            新建出货记录
                         </a>
                         <a role="button" href="scan" class="btn btn-default">
                             扫二维码

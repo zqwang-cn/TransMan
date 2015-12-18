@@ -1,6 +1,6 @@
 #coding:utf-8
 from django import forms
-from .models import TransRec,Card
+from .models import TransRec,Card,OutRec
 
 class ScanForm(forms.Form):
     qrcode=forms.CharField(label=("二维码"),required=True)
@@ -30,20 +30,20 @@ class NewForm(forms.ModelForm):
 
 class OutForm(forms.ModelForm):
     class Meta:
-        model=TransRec
+        model=OutRec
         fields=[
             'car_no',
             'driver_name',
             'contact_info',
-            'coal_type',
-            'setoff_amount'
+            'amount',
+            'qrcode'
         ]
         labels={
             'car_no':'车牌号',
             'driver_name':'驾驶员姓名',
             'contact_info':'联系方式',
-            'coal_type':'煤类型',
-            'setoff_amount':'出货量'
+            'amount':'出货量',
+            'qrcode':'二维码'
         }
 
 class ArriveForm(forms.ModelForm):
