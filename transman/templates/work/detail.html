@@ -15,65 +15,51 @@
 
     <div class="container-fluid">
 	<div class="row">
-        <div class="col-md-1">
+        <div class="col-md-4">
         </div>
-		<div class="col-md-10">
+		<div class="col-md-4">
 			<h1>
                 详细信息
 			</h1>
-            <div class="panel-group">
+            <div class="list-group text-center">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         车牌号：
-                    </div>
-                    <div class="panel-body">
                         {{rec.car_no}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         驾驶员姓名：
-                    </div>
-                    <div class="panel-body">
                         {{rec.driver_name}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         联系方式：
-                    </div>
-                    <div class="panel-body">
                         {{rec.contact_info}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         发货煤矿：
-                    </div>
-                    <div class="panel-body">
                         {{rec.mine.name}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         煤类型：
-                    </div>
-                    <div class="panel-body">
                         {{rec.coal_type.name}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         目标磅房：
-                    </div>
-                    <div class="panel-body">
                         {{rec.scale.name}}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         出发时间：
-                    </div>
-                    <div class="panel-body">
                         {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
                     </div>
-                    <div class="panel-heading">
+                    <div class="list-group-item">
                         二维码：
                     </div>
-                    <div class="panel-body">
+                    <div class="list-group-item">
                         <div id="qrcode">
                         </div>
                     </div>
 
-                    <div class="panel-heading">
+                    <!--<div class="panel-heading">
                         矿发量：
                     </div>
                     <div class="panel-body">
@@ -115,17 +101,17 @@
                     </div>
                     <div class="panel-body">
                         {{ rec.cash_payed|yesno:"是,否" }}
-                    </div>
+                    </div>-->
                 </div>
             </div>
 
-            <div class="buttons">
+            <div class="buttons hidden-print">
                 <a role="button" href="list" class="btn btn-default">
                     返回列表
                 </a>
             <div>
 		</div>
-        <div class="col-md-1">
+        <div class="col-md-4">
         </div>
 	</div>
 </div>
@@ -133,7 +119,11 @@
     <script src="/static/jquery.min.js"></script>
     <script src="/static/jquery.qrcode.min.js"></script>
     <script>
-        $('#qrcode').qrcode("{{rec.qrcode}}")
+        $('#qrcode').qrcode({
+            "width":"150",
+            "height":"150",
+            "text":"{{rec.qrcode}}"
+        });
     </script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/script.js"></script>
