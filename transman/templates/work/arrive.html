@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>详细信息</title>
+        <title>到货称重</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
@@ -60,6 +60,7 @@
                         </div>
                     </div>
                     {% if not rec.arrive_amount %}
+                    <h1>请填写重量</h1>
                     <form role="form" action="/work/arrive" method="POST">
                         {% csrf_token %}
                         {{ form.as_p }}
@@ -72,6 +73,12 @@
                             </a>
                         </div>
                     </form>
+                    {% else %}
+                    <div class="buttons">
+                        <a role="button" href="list" class="btn btn-default">
+                            返回列表
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
                 <div class="col-md-2">

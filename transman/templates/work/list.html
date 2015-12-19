@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>查看记录</title>
+        <title>进货记录</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-md-10">
                     <h1>
-                        查看所有记录
+                        所有进货记录
                     </h1>
                     <table class="table">
                         <thead>
@@ -43,6 +43,12 @@
                                     煤种类
                                 </th>
                                 <th>
+                                    磅
+                                </th>
+                                <th>
+                                    运费单价
+                                </th>
+                                <th>
                                     出发时间
                                 </th>
 
@@ -53,13 +59,7 @@
                                     实收量
                                 </th>
                                 <th>
-                                    磅
-                                </th>
-                                <th>
                                     到达时间
-                                </th>
-                                <th>
-                                    运费单价
                                 </th>
                                 <th>
                                     油卡
@@ -99,35 +99,35 @@
                                     {{ rec.coal_type.name }}
                                 </td>
                                 <td>
-                                    {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
-                                </td>
-
-                                <td>
-                                    {{ rec.setoff_amount }}
-                                </td>
-                                <td>
-                                    {{ rec.arrive_amount }}
-                                </td>
-                                <td>
                                     {{rec.scale.name }}
-                                </td>
-                                <td>
-                                    {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
                                 </td>
                                 <td>
                                     {{ rec.unit }}
                                 </td>
                                 <td>
-                                    {{ rec.card.value }}
+                                    {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
+                                </td>
+
+                                <td>
+                                    {{ rec.setoff_amount|default:"---" }}
                                 </td>
                                 <td>
-                                    {{ rec.card_payed }}
+                                    {{ rec.arrive_amount|default:"---" }}
                                 </td>
                                 <td>
-                                    {{ rec.cash }}
+                                    {{ rec.arrive_time|date:"Y-m-d H:i:s"|default:"------" }}
                                 </td>
                                 <td>
-                                    {{ rec.cash_payed }}
+                                    {{ rec.card.value|default:"---" }}
+                                </td>
+                                <td>
+                                    {{ rec.card_payed|yesno:"是,否" }}
+                                </td>
+                                <td>
+                                    {{ rec.cash|default:"---" }}
+                                </td>
+                                <td>
+                                    {{ rec.cash_payed|yesno:"是,否" }}
                                 </td>
                                 <td>
                                     <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">
@@ -157,60 +157,33 @@
                     </div>
                     <br>
 
-                    {% if showsum %}
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                总收货量：
-                            </div>
-                            <div class="panel-body">
-                                {{ arrive_amount_sum }}
-                            </div>
-                            <div class="panel-heading">
-                                已付现金总额：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_sum }}
-                            </div>
-                            <div class="panel-heading">
-                                已付油卡数：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_sums %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
-                                {% endfor %}
-                            </div>
-                            <div class="panel-heading">
-                                现金余额：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_balance }}
-                            </div>
-                            <div class="panel-heading">
-                                油卡余额：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_balances %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
 
                     <div class="buttons">
+                        {% if perm == "mine" %}
                         <a role="button" href="new" class="btn btn-default">
                             新建记录
                         </a>
-                        <a role="button" href="out" class="btn btn-default">
-                            出货
-                        </a>
+                        {% endif %}
+                        {% if perm == "scale" or perm == "account"%}
                         <a role="button" href="listout" class="btn btn-default">
-                            出货记录
+                            出货管理
                         </a>
-                        <a role="button" href="scan" class="btn btn-default">
-                            扫二维码
+                        {% endif %}
+                        {% if perm == "account"%}
+                        <a role="button" href="balance" class="btn btn-default">
+                            统计信息
                         </a>
+                        {% endif %}
+                        {% if perm == "scale" %}
+                        <a role="button" href="scan?action=arrive" class="btn btn-default">
+                            扫二维码到货称重
+                        </a>
+                        {% endif %}
+                        {% if perm == "account" %}
+                        <a role="button" href="scan?action=selectCard" class="btn btn-default">
+                            扫二维码付款
+                        </a>
+                        {% endif %}
                         <a role="button" href="/auth/logout" class="btn btn-default">
                             注销
                         </a>

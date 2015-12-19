@@ -15,6 +15,9 @@ class Mine(models.Model):
 class Scale(models.Model):
     name=models.CharField('名称',max_length=50)
     out_unit=models.FloatField('出货单价')
+    amount_in=models.FloatField(default=0.0)
+    amount_out=models.FloatField(default=0.0)
+    amount_balance=models.FloatField(default=0.0)
     user=models.OneToOneField(User,on_delete=models.CASCADE,verbose_name='用户')
     class Meta:
         verbose_name='磅房'
@@ -85,10 +88,12 @@ class TransRec(models.Model):
         )
 
 class OutRec(models.Model):
-    car_no=models.CharField(max_length=10)
-    driver_name=models.CharField(max_length=10)
-    contact_info=models.CharField(max_length=20)
+    car_no=models.CharField(max_length=10,blank=True)
+    driver_name=models.CharField(max_length=10,blank=True)
+    contact_info=models.CharField(max_length=20,blank=True)
+    scale=models.ForeignKey(Scale)
     unit=models.FloatField()
     amount=models.FloatField()
     setoff_time=models.DateTimeField(auto_now_add=True)
-    qrcode=models.CharField(max_length=10,blank=True,unique=True)
+    qrcode=models.CharField(max_length=10,blank=True)
+    payed=models.BooleanField(default=False)
