@@ -85,6 +85,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'Jiyou123',
         'HOST': '127.0.0.1',
+        'ATOMIC_REQUESTS':True,
     }
 }
 
@@ -118,3 +119,4 @@ STATICFILES_DIRS=(
 )
 
 LOGIN_URL='/'
+

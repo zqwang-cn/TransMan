@@ -28,7 +28,7 @@ def list(request):
         all_recs=TransRec.objects.filter(scale__user=user).order_by('-id')
         perm='scale'
         
-    paginator=Paginator(all_recs,5)
+    paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
     try:
         recs=paginator.page(page)
@@ -61,7 +61,7 @@ def listout(request):
             payed=True
     else:
         raise PermissionDenied
-    paginator=Paginator(all_recs,5)
+    paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
     try:
         recs=paginator.page(page)
