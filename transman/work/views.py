@@ -28,7 +28,7 @@ def list(request):
         all_recs=TransRec.objects.filter(scale__user=user).order_by('-id')
         perm='scale'
         
-    paginator=Paginator(all_recs,10)
+    paginator=Paginator(all_recs,5)
     page=request.GET.get('page')
     try:
         recs=paginator.page(page)
@@ -36,8 +36,13 @@ def list(request):
         recs=paginator.page(1)
     except EmptyPage:
         recs=paginator.page(paginator.num_pages)
-
-    return render(request,'work/list.html',{'recs':recs,'perm':perm})
+    begin=recs.number-5/2
+    if begin<1:begin=1
+    end=recs.number+5/2
+    if end>paginator.num_pages:end=paginator.num_pages
+    pr=range(begin,end+1)
+    
+    return render(request,'work/list.html',{'recs':recs,'perm':perm,'pr':pr})
 
 def listout(request):
     user=request.user

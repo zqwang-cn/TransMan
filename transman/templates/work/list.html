@@ -21,7 +21,8 @@
                     <h1>
                         所有进货记录
                     </h1>
-                    <table class="table">
+                    <div class="table-responsive">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>
@@ -43,7 +44,7 @@
                                     煤种类
                                 </th>
                                 <th>
-                                    磅
+                                    磅房
                                 </th>
                                 <th>
                                     运费单价
@@ -138,22 +139,30 @@
                             {% endfor %}
                         </tbody>
                     </table> 
+                    </div>
 
-
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if recs.has_previous %}
-                            <a href="?page={{ recs.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                第 {{ recs.number }} 页，共 {{ recs.paginator.num_pages }} 页
-                            </span>
-
-                            {% if recs.has_next %}
-                            <a href="?page={{ recs.next_page_number }}">next</a>
-                            {% endif %}
-                        </span>
+                    <div class="text-center">
+                    <ul class="pagination">
+                        {% if recs.has_previous %}
+                        <li>
+                            <a href="?page={{recs.previous_page_number}}">
+                                <span>&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for p in pr %}
+                        <li {% if p == recs.number %}class="active"{% endif %}>
+                            <a href="?page={{p}}">{{p}}</a>
+                        </li>
+                        {% endfor %}
+                        {% if recs.has_next %}
+                        <li>
+                            <a href="?page={{recs.next_page_number}}">
+                                <span>&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
                     </div>
                     <br>
 
