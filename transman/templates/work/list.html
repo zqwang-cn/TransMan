@@ -131,8 +131,8 @@
                                     {{ rec.cash_payed|yesno:"是,否" }}
                                 </td>
                                 <td>
-                                    <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default">
-                                        查看详情
+                                    <a role="button" href="detail?qrcode={{ rec.qrcode }}" class="btn btn-default btn-sm">
+                                        查看
                                     </a>
                                 </td>
                             </tr>
@@ -164,22 +164,20 @@
                         {% endif %}
                     </ul>
                     </div>
-                    <br>
-
 
                     <div class="buttons">
                         {% if perm == "mine" %}
-                        <a role="button" href="new" class="btn btn-default">
+                        <a role="button" href="new" class="btn btn-lg btn-primary">
                             新建记录
                         </a>
                         {% endif %}
                         {% if perm == "scale" or perm == "account"%}
-                        <a role="button" href="listout" class="btn btn-default">
+                        <a role="button" href="listout" class="btn btn-primary btn-block">
                             出货管理
                         </a>
                         {% endif %}
                         {% if perm == "account"%}
-                        <a role="button" href="balance" class="btn btn-default">
+                        <a role="button" href="balance" class="btn btn-primary btn-block">
                             统计信息
                         </a>
                         {% endif %}
@@ -193,7 +191,7 @@
                             扫二维码付款
                         </a>
                         {% endif %}
-                        <a role="button" href="/auth/logout" class="btn btn-default">
+                        <a role="button" href="/auth/logout" class="btn btn-primary btn-lg">
                             注销
                         </a>
                     </div>
