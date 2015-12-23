@@ -8,15 +8,16 @@
         <title>详细信息</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/style.css" rel="stylesheet">
 
     </head>
     <body>
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-1">
+                <div class="col-md-4">
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     <h1 class="text-center">
                         详细信息
                     </h1>
@@ -90,10 +91,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
                         <form role="form" id="form" action="/work/selectCard" method="POST">
                             {% csrf_token %}
                             {{ form.as_p }}
+                            <br>
                             <div class="buttons">
                                 <button type="submit" class="btn btn-default">
                                     选择油卡
@@ -103,9 +104,8 @@
                                 </a>
                             </div>
                         </form>
-                    </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-4">
                 </div>
             </div>
             <br>

@@ -18,9 +18,11 @@
                 <div class="col-md-1">
                 </div>
                 <div class="col-md-10">
+                    <br>
                     <h1>
                         查看所有记录
                     </h1>
+                    <br>
                     <table class="table">
                         <thead>
                             <tr>
@@ -96,20 +98,28 @@
                     </table> 
 
 
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if recs.has_previous %}
-                            <a href="?page={{ recs.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                第 {{ recs.number }} 页，共 {{ recs.paginator.num_pages }} 页
-                            </span>
-
-                            {% if recs.has_next %}
-                            <a href="?page={{ recs.next_page_number }}">next</a>
-                            {% endif %}
-                        </span>
+                    <div style="text-align:center">
+                    <ul class="pagination">
+                        {% if recs.has_previous %}
+                        <li>
+                            <a href="?page={{recs.previous_page_number}}">
+                                <span>&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for p in pr %}
+                        <li {% if p == recs.number %}class="active"{% endif %}>
+                            <a href="?page={{p}}">{{p}}</a>
+                        </li>
+                        {% endfor %}
+                        {% if recs.has_next %}
+                        <li>
+                            <a href="?page={{recs.next_page_number}}">
+                                <span>&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
                     </div>
                     <br>
 
@@ -149,5 +159,6 @@
         </div>
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/script.js"></script>
     </body>
 </html>

@@ -28,7 +28,7 @@ def list(request):
         all_recs=TransRec.objects.filter(scale__user=user).order_by('-id')
         perm='scale'
         
-    paginator=Paginator(all_recs,5)
+    paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
     try:
         recs=paginator.page(page)
@@ -74,7 +74,12 @@ def listout(request):
         recs=paginator.page(1)
     except EmptyPage:
         recs=paginator.page(paginator.num_pages)
-    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed})
+    begin=recs.number-5/2
+    if begin<1:begin=1
+    end=recs.number+5/2
+    if end>paginator.num_pages:end=paginator.num_pages
+    pr=range(begin,end+1)
+    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed,'pr':pr})
 
 @permission_required('work.mine',raise_exception=True)
 def new(request):

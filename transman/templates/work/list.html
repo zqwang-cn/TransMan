@@ -18,9 +18,11 @@
                 <div class="col-md-1">
                 </div>
                 <div class="col-md-10">
+                    <br>
                     <h1>
                         所有进货记录
                     </h1>
+                    <br>
                     <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -141,7 +143,7 @@
                     </table> 
                     </div>
 
-                    <div class="text-center">
+                    <div style="text-align:center">
                     <ul class="pagination">
                         {% if recs.has_previous %}
                         <li>
@@ -167,31 +169,31 @@
 
                     <div class="buttons">
                         {% if perm == "mine" %}
-                        <a role="button" href="new" class="btn btn-lg btn-primary">
+                        <a role="button" href="new">
                             新建记录
                         </a>
                         {% endif %}
                         {% if perm == "scale" or perm == "account"%}
-                        <a role="button" href="listout" class="btn btn-primary btn-block">
+                        <a role="button" href="listout">
                             出货管理
                         </a>
                         {% endif %}
                         {% if perm == "account"%}
-                        <a role="button" href="balance" class="btn btn-primary btn-block">
+                        <a role="button" href="balance">
                             统计信息
                         </a>
                         {% endif %}
                         {% if perm == "scale" %}
-                        <a role="button" href="scan?action=arrive" class="btn btn-default">
+                        <a role="button" href="scan?action=arrive">
                             扫二维码到货称重
                         </a>
                         {% endif %}
                         {% if perm == "account" %}
-                        <a role="button" href="scan?action=selectCard" class="btn btn-default">
+                        <a role="button" href="scan?action=selectCard">
                             扫二维码付款
                         </a>
                         {% endif %}
-                        <a role="button" href="/auth/logout" class="btn btn-primary btn-lg">
+                        <a role="button" href="/auth/logout">
                             注销
                         </a>
                     </div>
@@ -203,5 +205,6 @@
         </div>
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/script.js"></script>
     </body>
 </html>

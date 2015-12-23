@@ -15,9 +15,9 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-1">
+                <div class="col-md-4">
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     <h1 class="text-center">
                         详细信息
                     </h1>
@@ -115,7 +115,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
                         <form role="form" id="form" action="/work/pay" method="POST">
                             {% csrf_token %}
                             {{ form.as_p }}
@@ -140,9 +139,8 @@
                                 </a>
                             </div>
                         </form>
-                    </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-4">
                 </div>
             </div>
             <br>

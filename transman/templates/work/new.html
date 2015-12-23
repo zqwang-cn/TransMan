@@ -14,26 +14,30 @@
     <body>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-4">
                     <h1>
                         新建出货记录
                     </h1>
                     <form role="form" action="/work/new" method="POST">
                         {% csrf_token %}
                         {{form.as_p}}
+                        <br>
+                        <br>
+                        <br>
+                        <br>
                         <div class="buttons">
-                            <button type="submit" class="btn btn-default">
-                                生成出货记录
+                            <button type="submit">
+                                生成记录
                             </button>
-                            <a role="button" href="list" class="btn btn-default">
+                            <a role="button" href="list">
                                 返回列表
                             </a>
                         </div>
                     </form>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                 </div>
             </div>
             <br>
