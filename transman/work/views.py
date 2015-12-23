@@ -89,8 +89,6 @@ def new(request):
         if form.is_valid():
             rec=form.save(commit=False)
             rec.qrcode=randqr()
-            shipment=Shipment.objects.get(coal_type=rec.coal_type,mine=rec.mine,scale=rec.scale)
-            rec.unit=shipment.unit
             rec.save()
             return redirect('/work/detail?qrcode='+str(rec.qrcode))
     form=NewForm(Mine.objects.filter(user=user))

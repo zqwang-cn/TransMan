@@ -17,7 +17,8 @@ class NewForm(forms.ModelForm):
             'contact_info',
             'mine',
             'coal_type',
-            'scale'
+            'scale',
+            'unit',
         ]
         labels={
             'car_no':'车牌号',
@@ -25,7 +26,8 @@ class NewForm(forms.ModelForm):
             'contact_info':'联系方式',
             'mine':'出发煤矿',
             'coal_type':'煤类型',
-            'scale':'目标磅房'
+            'scale':'目标磅房',
+            'unit':'单价',
         }
 
 class OutForm(forms.ModelForm):
