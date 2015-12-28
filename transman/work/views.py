@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.shortcuts import render,redirect
-from .models import TransRec,Mine,Shipment,Balance,Card,OutRec,CoalType,Scale
+from .models import TransRec,Mine,Balance,Card,OutRec,CoalType,Scale
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from django.contrib.auth.decorators import permission_required,login_required
@@ -25,7 +25,7 @@ def list(request):
         all_recs=TransRec.objects.filter(mine__user=user).order_by('-id')
         perm='mine'
     elif user.has_perm('work.scale'):
-        all_recs=TransRec.objects.filter(scale__user=user).order_by('-id')
+        all_recs=TransRec.objects.filter(scale=user.userscaleinfo.scale).order_by('-id')
         perm='scale'
         
     paginator=Paginator(all_recs,10)
@@ -50,22 +50,31 @@ def listout(request):
     if user.has_perm('work.scale'):
         perm='scale'
         if qrcode:
-            all_recs=OutRec.objects.filter(scale=request.user.scale,qrcode=qrcode).order_by('-id')
+            all_recs=OutRec.objects.filter(scale=request.user.userscaleinfo.scale,qrcode=qrcode).order_by('-id')
         else:
-            all_recs=OutRec.objects.filter(scale=request.user.scale).order_by('-id')
+            all_recs=OutRec.objects.filter(scale=request.user.userscaleinfo.scale).order_by('-id')
         payed=None
+        sum=None
     elif user.has_perm('work.account'):
         perm='account'
         if qrcode:
             all_recs=OutRec.objects.filter(qrcode=qrcode).order_by('-id')
+            if not all_recs.exists():
+                return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
+            if all_recs[0].payed:
+                payed=True
+            else:
+                payed=False
+                sum=0.0
+                for rec in all_recs:
+                    sum+=rec.unit*rec.amount
         else:
             all_recs=OutRec.objects.order_by('-id').all()
-        if all_recs.exists() and not all_recs[0].payed:
-            payed=False
-        else:
-            payed=True
+            payed=None
+            sum=None
     else:
         raise PermissionDenied
+
     paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
     try:
@@ -79,7 +88,7 @@ def listout(request):
     end=recs.number+5/2
     if end>paginator.num_pages:end=paginator.num_pages
     pr=range(begin,end+1)
-    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed,'pr':pr})
+    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed,'pr':pr,'sum':sum})
 
 @permission_required('work.mine',raise_exception=True)
 def new(request):
@@ -101,7 +110,7 @@ def out(request):
         if form.is_valid():
             qrcode=form.cleaned_data['qrcode']
             if qrcode:
-                recs=OutRec.objects.filter(scale=request.user.scale,qrcode=qrcode)
+                recs=OutRec.objects.filter(scale=request.user.userscaleinfo.scale,qrcode=qrcode)
                 if recs.exists():
                     rec=recs[0]
                     if rec.payed:
@@ -109,7 +118,7 @@ def out(request):
                     rec.amount=form.cleaned_data['amount']
                     rec.pk=None
                     rec.save()
-                    scale=request.user.scale
+                    scale=rec.scale
                     scale.amount_out+=form.cleaned_data['amount']
                     scale.amount_balance-=form.cleaned_data['amount']
                     scale.save()
@@ -118,11 +127,11 @@ def out(request):
                     return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
             else:
                 rec=form.save(commit=False)
-                rec.scale=request.user.scale
-                rec.unit=request.user.scale.out_unit
+                rec.scale=request.user.userscaleinfo.scale
+                rec.unit=rec.scale.out_unit
                 rec.qrcode=randqr()
                 rec.save()
-                scale=request.user.scale
+                scale=rec.scale
                 scale.amount_out+=form.cleaned_data['amount']
                 scale.amount_balance-=form.cleaned_data['amount']
                 scale.save()
@@ -193,13 +202,14 @@ def arrive(request):
                 rec=TransRec.objects.get(qrcode=qrcode)
             except ObjectDoesNotExist:
                 return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
-            if rec.scale!=request.user.scale:
+            if rec.scale!=request.user.userscaleinfo.scale:
                 return render(request,'work/info.html',{'title':'错误','content':'目标磅房非此磅房'})
             rec.setoff_amount=form.cleaned_data['setoff_amount']
             rec.arrive_amount=form.cleaned_data['arrive_amount']
             rec.arrive_time=datetime.datetime.now()
+            rec.opscale=request.user
             rec.save()
-            scale=request.user.scale
+            scale=rec.scale
             scale.amount_in+=form.cleaned_data['arrive_amount']
             scale.amount_balance+=form.cleaned_data['arrive_amount']
             scale.save()
@@ -211,7 +221,7 @@ def arrive(request):
         rec=TransRec.objects.get(qrcode=qrcode)
     except ObjectDoesNotExist:
         return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
-    if rec.scale!=request.user.scale:
+    if rec.scale!=request.user.userscaleinfo.scale:
         return render(request,'work/info.html',{'title':'错误','content':'目标磅房非此磅房'})
     form=ArriveForm(qrcode)
     return render(request,'work/arrive.html',{'form':form,'rec':rec})
@@ -281,6 +291,7 @@ def selectCard(request):
             cash=total-card.value
             rec.cash=cash
             rec.card=card
+            rec.opaccount=request.user
             rec.save()
             return redirect('/work/pay?qrcode='+str(qrcode))
     else:

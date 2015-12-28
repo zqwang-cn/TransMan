@@ -123,6 +123,11 @@
                     </div>
                     <br>
 
+                    {% if sum %}
+                    <div class="text-center">
+                        <h2>总运费：{{sum}}</h2
+                    </div>
+                    {% endif %}
                     <div class="buttons">
                         <a role="button" href="list" class="btn btn-default">
                             进货管理
