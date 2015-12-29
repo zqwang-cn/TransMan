@@ -2,8 +2,18 @@ h1 {
     text-align:center;
 }
 
-table {word-break:keep-all}
+table {
+    word-break:keep-all
+}
 
 .buttons {
     text-align:center;
+}
+
+.left {
+    float:left;
+}
+
+.right {
+    float:right;
 }

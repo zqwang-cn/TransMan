@@ -120,21 +120,21 @@
                             {{ form.as_p }}
                             <div class="buttons">
                                 {% if not rec.card_payed %}
-                                <button type="button" class="btn btn-default" onclick="$('#id_payfor').val('card');$('#form').submit()">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('card');$('#form').submit()">
                                     付油卡
                                 </button>
                                 {% endif %}
                                 {% if not rec.cash_payed %}
-                                <button type="button" class="btn btn-default" onclick="$('#id_payfor').val('cash');$('#form').submit()">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('cash');$('#form').submit()">
                                     付现金
                                 </button>
                                 {% endif %}
                                 {% if not rec.card_payed and not rec.cash_payed %}
-                                <button type="button" class="btn btn-default" onclick="$('#id_payfor').val('both');$('#form').submit()">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('both');$('#form').submit()">
                                     付油卡和现金
                                 </button>
                                 {% endif %}
-                                <a role="button" href="list" class="btn btn-default">
+                                <a role="button" href="list" class="btn btn-primary btn-lg">
                                     返回列表
                                 </a>
                             </div>

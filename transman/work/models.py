@@ -14,10 +14,6 @@ class Mine(models.Model):
 
 class Scale(models.Model):
     name=models.CharField('名称',max_length=50)
-    out_unit=models.FloatField('出货单价')
-    amount_in=models.FloatField(default=0.0)
-    amount_out=models.FloatField(default=0.0)
-    amount_balance=models.FloatField(default=0.0)
     #user=models.OneToOneField(User,on_delete=models.CASCADE,verbose_name='用户')
     class Meta:
         verbose_name='磅房'

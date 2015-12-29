@@ -102,19 +102,19 @@
                     <ul class="pagination">
                         {% if recs.has_previous %}
                         <li>
-                            <a href="?page={{recs.previous_page_number}}">
+                            <a href="?page={{recs.previous_page_number}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">
                                 <span>&laquo;</span>
                             </a>
                         </li>
                         {% endif %}
                         {% for p in pr %}
                         <li {% if p == recs.number %}class="active"{% endif %}>
-                            <a href="?page={{p}}">{{p}}</a>
+                            <a href="?page={{p}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">{{p}}</a>
                         </li>
                         {% endfor %}
                         {% if recs.has_next %}
                         <li>
-                            <a href="?page={{recs.next_page_number}}">
+                            <a href="?page={{recs.next_page_number}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">
                                 <span>&raquo;</span>
                             </a>
                         </li>
@@ -125,34 +125,41 @@
 
                     {% if sum %}
                     <div class="text-center">
-                        <h2>总运费：{{sum}}</h2
+                        <h2>总运费：{{sum}}元</h2>
                     </div>
                     {% endif %}
+                    <br>
+
                     <div class="buttons">
-                        <a role="button" href="list" class="btn btn-default">
+                        <a role="button" href="list" class="btn btn-primary btn-lg left">
                             进货管理
                         </a>
-                        {% if perm == "scale" %}
-                        <a role="button" href="out" class="btn btn-default">
-                            新建出货记录
-                        </a>
-                        {% endif %}
-                        {% if perm == "account" and not qrcode %}
-                        <a role="button" href="scan?action=listout" class="btn btn-default">
-                            扫二维码查看全部出货记录
-                        </a>
-                        {% endif %}
-                        {% if perm == "account" and qrcode %}
-                        <a role="button" href="listout" class="btn btn-default">
+
+                        {% if qrcode %}
+                        <a role="button" href="listout" class="btn btn-primary btn-lg left">
                             全部出货记录
                         </a>
                         {% endif %}
+
+                        {% if perm == "scale" %}
+                        <a role="button" href="out" class="btn btn-primary btn-lg">
+                            新建出货记录
+                        </a>
+                        {% endif %}
+
+                        {% if perm == "account" and not qrcode %}
+                        <a role="button" href="scan?action=listout" class="btn btn-primary btn-lg">
+                            扫二维码查看全部出货记录
+                        </a>
+                        {% endif %}
+
                         {% if perm == "account" and not payed and qrcode %}
-                        <a role="button" href="/work/payout?qrcode={{qrcode}}" class="btn btn-default">
+                        <a role="button" href="/work/payout?qrcode={{qrcode}}" class="btn btn-primary btn-lg">
                             付款
                         </a>
                         {% endif %}
-                        <a role="button" href="/auth/logout" class="btn btn-default">
+
+                        <a role="button" href="/auth/logout" class="btn btn-primary btn-lg right">
                             注销
                         </a>
                     </div>

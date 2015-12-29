@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^out$', views.out, name='out'),
     url(r'^outdetail$', views.outdetail, name='outdetail'),
     url(r'^balance$', views.balance, name='balance'),
+    url(r'^search$', views.search, name='search'),
 ]
 

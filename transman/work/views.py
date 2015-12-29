@@ -3,10 +3,11 @@ from django.shortcuts import render,redirect
 from .models import TransRec,Mine,Balance,Card,OutRec,CoalType,Scale
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
+from django.contrib.auth.models import User,Permission
 from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist,PermissionDenied
-from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm
-from django.db.models import Sum,F
+from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm,SearchForm
+from django.db.models import Sum,F,Q
 
 def randqr():
     qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
@@ -27,6 +28,8 @@ def list(request):
     elif user.has_perm('work.scale'):
         all_recs=TransRec.objects.filter(scale=user.userscaleinfo.scale).order_by('-id')
         perm='scale'
+    else:
+        raise PermissionDenied
         
     paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
@@ -63,6 +66,7 @@ def listout(request):
                 return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
             if all_recs[0].payed:
                 payed=True
+                sum=None
             else:
                 payed=False
                 sum=0.0
@@ -115,26 +119,18 @@ def out(request):
                     rec=recs[0]
                     if rec.payed:
                         return render(request,'work/info.html',{'title':'错误','content':'二维码已作废'})
-                    rec.amount=form.cleaned_data['amount']
                     rec.pk=None
+                    rec.amount=form.cleaned_data['amount']
+                    rec.unit=form.cleaned_data['unit']
                     rec.save()
-                    scale=rec.scale
-                    scale.amount_out+=form.cleaned_data['amount']
-                    scale.amount_balance-=form.cleaned_data['amount']
-                    scale.save()
                     return redirect('/work/listout?qrcode='+rec.qrcode)
                 else:
                     return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
             else:
                 rec=form.save(commit=False)
                 rec.scale=request.user.userscaleinfo.scale
-                rec.unit=rec.scale.out_unit
                 rec.qrcode=randqr()
                 rec.save()
-                scale=rec.scale
-                scale.amount_out+=form.cleaned_data['amount']
-                scale.amount_balance-=form.cleaned_data['amount']
-                scale.save()
                 return redirect('/work/outdetail?id='+str(rec.id))
         else:
             return render(request,'work/info.html',{'title':'错误','content':'表格填写错误'})
@@ -180,6 +176,7 @@ def payout(request):
     else:
         return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
 
+@login_required
 def scan(request):
     user=request.user
     if user.has_perm('work.scale') or user.has_perm('work.account'):
@@ -209,10 +206,6 @@ def arrive(request):
             rec.arrive_time=datetime.datetime.now()
             rec.opscale=request.user
             rec.save()
-            scale=rec.scale
-            scale.amount_in+=form.cleaned_data['arrive_amount']
-            scale.amount_balance+=form.cleaned_data['arrive_amount']
-            scale.save()
             return render(request,'work/info.html',{'title':'成功','content':'操作成功'})
         else:
             return render(request,'work/info.html',{'title':'错误','content':'表格填写错误'})
@@ -241,8 +234,10 @@ def pay(request):
                 rec.card_payed=True
                 rec.card.balance-=1
                 rec.card.save()
+                rec.save()
             elif payfor=='cash':
                 rec.cash_payed=True
+                rec.save()
                 balance=Balance.objects.get(pk=1)
                 balance.balance-=rec.cash
                 balance.save()
@@ -251,12 +246,12 @@ def pay(request):
                 rec.card.balance-=1
                 rec.card.save()
                 rec.cash_payed=True
+                rec.save()
                 balance=Balance.objects.get(pk=1)
                 balance.balance-=rec.cash
                 balance.save()
             else:
                 return render(request,'work/info.html',{'title':'错误','content':'无此命令'})
-            rec.save()
             return render(request,'work/info.html',{'title':'成功','content':'操作成功'})
         else:
             return render(request,'work/info.html',{'title':'错误','content':'表格填写错误'})
@@ -292,6 +287,8 @@ def selectCard(request):
             rec.cash=cash
             rec.card=card
             rec.opaccount=request.user
+            if card.value==0:
+                rec.card_payed=True
             rec.save()
             return redirect('/work/pay?qrcode='+str(qrcode))
     else:
@@ -310,46 +307,76 @@ def selectCard(request):
 
 @permission_required('work.account',raise_exception=True)
 def balance(request):
-    all_recs=TransRec.objects
     mines=Mine.objects.all()
     coal_types=CoalType.objects.all()
-    sumins=[]
-    sumins_total=0.0
-    for mine in mines:
-        sumin={'sumin':[],'total':0.0,'mine':mine}
-        for coal_type in coal_types:
-            sum=all_recs.filter(mine=mine,coal_type=coal_type).aggregate(Sum('arrive_amount'))['arrive_amount__sum']
-            if not sum:
-                sum=0.0
-            sumin['sumin'].append(sum)
-            sumin['total']+=sum
-        sumins_total+=sumin['total']
-        sumins.append(sumin)
-
     scales=Scale.objects.all()
-    scales_amount=[]
+    all_recs=TransRec.objects
+    out_recs=OutRec.objects
+
+    mine_table=[]
+    for mine in mines:
+        row=[]
+        for coal_type in coal_types:
+            s=all_recs.filter(mine=mine,coal_type=coal_type).aggregate(Sum('arrive_amount'))['arrive_amount__sum']
+            if not s:
+                s=0.0
+            row.append(s)
+        row.append(sum(row))
+        row.insert(0,mine.name)
+        mine_table.append(row)
+    mine_total=sum([row[-1] for row in mine_table])
+
+    scale_table=[]
     for scale in scales:
-        scales_amount.append({'name':scale.name,'in':scale.amount_in,'out':scale.amount_out,'balance':scale.amount_balance})
+        row=[]
+        for coal_type in coal_types:
+            s=all_recs.filter(scale=scale,coal_type=coal_type).aggregate(Sum('arrive_amount'))['arrive_amount__sum']
+            if not s:
+                s=0.0
+            row.append(s)
+        row.append(sum(row))
+        s=out_recs.filter(scale=scale).aggregate(Sum('amount'))['amount__sum']
+        if not s:
+            s=0.0
+        row.append(s)
+        row.append(row[-2]-row[-1])
+        row.insert(0,scale.name)
+        scale_table.append(row)
+    in_total=sum([row[-3] for row in scale_table])
+    out_total=sum([row[-2] for row in scale_table])
+    balance_total=sum([row[-1] for row in scale_table])
 
     cards=Card.objects.all()
-    card_sums=[]
-    card_balances=[]
+    cards_info=[]
     for card in cards:
         if card.value!=0:
-            card_sums.append((card.value,TransRec.objects.filter(card=card,card_payed=True).count()))
-            card_balances.append((card.value,card.balance))
+            card_info=[]
+            card_info.append(card.value)
+            card_info.append(TransRec.objects.filter(card=card,card_payed=True).count())
+            card_info.append(card.balance)
+            cards_info.append(card_info)
 
     cash_sumin=TransRec.objects.filter(cash_payed=True).aggregate(Sum('cash'))['cash__sum']
     cash_sumout=OutRec.objects.filter(payed=True).annotate(total=F('unit')*F('amount')).aggregate(Sum('total'))['total__sum']
     cash_balance=Balance.objects.get(pk=1).balance
+    cash_info=[cash_sumin,cash_sumout,cash_balance]
+
     return render(request,'work/balance.html',{
-        'sumins':sumins,
-        'sumins_total':sumins_total,
-        'scales_amount':scales_amount,
-        'card_sums':card_sums,
-        'card_balances':card_balances,
-        'cash_sumin':cash_sumin,
-        'cash_sumout':cash_sumout,
-        'cash_balance':cash_balance,
+        'mine_table':mine_table,
+        'mine_total':mine_total,
+        'scale_table':scale_table,
+        'in_total':in_total,
+        'out_total':out_total,
+        'balance_total':balance_total,
+        'cards_info':cards_info,
+        'cash_info':cash_info,
         'coal_types':coal_types,
     })
+
+def search(request):
+    perm_scale=Permission.objects.get(codename='scale')
+    opscales=User.objects.filter(user_permissions=perm_scale)
+    perm_account=Permission.objects.get(codename='account')
+    opaccounts=User.objects.filter(user_permissions=perm_account)
+    form=SearchForm(opscales,opaccounts)
+    return render(request,'work/search.html',{'form':form})

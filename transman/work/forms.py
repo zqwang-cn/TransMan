@@ -38,6 +38,7 @@ class OutForm(forms.ModelForm):
             'driver_name',
             'contact_info',
             'amount',
+            'unit',
             'qrcode'
         ]
         labels={
@@ -45,6 +46,7 @@ class OutForm(forms.ModelForm):
             'driver_name':'驾驶员姓名',
             'contact_info':'联系方式',
             'amount':'出货量',
+            'unit':'单价',
             'qrcode':'二维码'
         }
 
@@ -70,3 +72,12 @@ class SelectCardForm(forms.Form):
 class PayForm(forms.Form):
     qrcode=forms.CharField(widget=forms.HiddenInput())
     payfor=forms.CharField(widget=forms.HiddenInput())
+
+class SearchForm(forms.Form):
+    def __init__(self,opscales,opaccounts,*args,**kwargs):
+        super(SearchForm,self).__init__(*args,**kwargs)
+        self.fields['opscale']=forms.ModelChoiceField(label='磅房操作员',queryset=opscales)
+        self.fields['opaccount']=forms.ModelChoiceField(label='财务操作员',queryset=opaccounts)
+    setoff_time_begin=forms.DateField(label='出发时间范围 从')
+    setoff_time_end=forms.DateField(label='至')
+    car_no=forms.CharField(label='车牌号',max_length=10)

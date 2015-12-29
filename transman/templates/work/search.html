@@ -5,10 +5,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>新建</title>
+        <title>搜索</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
+        <link href="/static/bootstrap-datepicker.min.css" rel="stylesheet">
 
     </head>
     <body>
@@ -19,10 +20,10 @@
                 <div class="col-md-4">
                     <br>
                     <h1>
-                        建立出货记录
+                        搜索
                     </h1>
                     <br>
-                    <form role="form" action="/work/out" method="POST">
+                    <form role="form" action="/work/search" method="POST">
                         {% csrf_token %}
                         {{form.as_p}}
                         <br>
@@ -31,10 +32,10 @@
                         <br>
                         <div class="buttons">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                生成记录
+                                搜索
                             </button>
-                            <a role="button" href="listout" class="btn btn-primary btn-lg">
-                                返回出货列表
+                            <a role="button" href="list" class="btn btn-primary btn-lg">
+                                返回
                             </a>
                         </div>
                     </form>
@@ -47,6 +48,12 @@
 
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/bootstrap-datepicker.min.js"></script>
+        <script src="/static/bootstrap-datepicker.zh-CN.min.js"></script>
         <script src="/static/script.js"></script>
+        <script language="javascript">
+            $('#id_setoff_time_begin').datepicker({language:"zh-CN",format:"yyyy-mm-dd"});
+            $('#id_setoff_time_end').datepicker({language:"zh-CN",format:"yyyy-mm-dd"});
+        </script>
     </body>
 </html>

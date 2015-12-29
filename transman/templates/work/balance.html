@@ -15,106 +15,186 @@
 
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-1">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-10">
                     <h1>
                         统计信息
                     </h1>
 
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                总进货量：{{ sumins_total }}
-                            </div>
-                            <div class="panel-body">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                矿名
-                                            </th>
-                                            {% for coal_type in coal_types %}
-                                            <th>
-                                            {{ coal_type.name }}
-                                            </th>
-                                            {% endfor %}
-                                            <th>
-                                                总量
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for sumin in sumins %}
-                                        <tr>
-                                            <td>
-                                                {{sumin.mine.name}}
-                                            </td>
-                                            {% for sum in sumin.sumin %}
-                                            <td>
-                                                {{ sum }}
-                                            </td>
-                                            {% endfor %}
-                                            <td>
-                                                {{sumin.total}}
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="panel-heading">
-                                磅房进出货信息：
-                            </div>
-                            <div class="panel-body">
-                                {% for scale_amount in scales_amount %}
-                                <p>{{scale_amount.name}}：进货 {{scale_amount.in}}, 出货 {{scale_amount.out}},余量 {{scale_amount.balance}}{{sum}}</p>
+                    <h2>
+                        矿厂出货信息：
+                    </h2>
+                    <div class="container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        矿厂名
+                                    </th>
+                                    {% for coal_type in coal_types %}
+                                    <th>
+                                        {{ coal_type.name }}
+                                    </th>
+                                    {% endfor %}
+                                    <th>
+                                        合计
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in mine_table %}
+                                <tr>
+                                    {% for v in row %}
+                                    <td>
+                                        {{ v }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                            </div>
-                            <div class="panel-heading">
-                                进货已付现金：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_sumin }}
-                            </div>
-                            <div class="panel-heading">
-                                出货已付现金：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_sumout }}
-                            </div>
-                            <div class="panel-heading">
-                                已付油卡数：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_sums %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
+                                <tr>
+                                    <td>
+                                        合计
+                                    </td>
+                                    {% for coal_type in coal_types %}
+                                    <td>
+                                    </td>
+                                    {% endfor %}
+                                    <td>
+                                        {{ mine_total }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>
+                        磅房进出货信息：
+                    </h2>
+                    <div class="container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        磅房名
+                                    </th>
+                                    {% for coal_type in coal_types %}
+                                    <th>
+                                        {{ coal_type.name }}
+                                    </th>
+                                    {% endfor %}
+                                    <th>
+                                        进货合计
+                                    </th>
+                                    <th>
+                                        出货量
+                                    </th>
+                                    <th>
+                                        余量
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in scale_table %}
+                                <tr>
+                                    {% for v in row %}
+                                    <td>
+                                        {{ v }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                            </div>
-                            <div class="panel-heading">
-                                现金余额：
-                            </div>
-                            <div class="panel-body">
-                                {{ cash_balance }}
-                            </div>
-                            <div class="panel-heading">
-                                油卡余额：
-                            </div>
-                            <div class="panel-body">
-                                {% for card in card_balances %}
-                                <p>{{card.0}}面额: {{card.1}}张</p>
+                                <tr>
+                                    <td>
+                                        合计
+                                    </td>
+                                    {% for coal_type in coal_types %}
+                                    <td>
+                                    </td>
+                                    {% endfor %}
+                                    <td>
+                                        {{ in_total }}
+                                    </td>
+                                    <td>
+                                        {{ out_total }}
+                                    </td>
+                                    <td>
+                                        {{ balance_total }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>
+                        运费信息：
+                    </h2>
+                    <div class="container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                <th>
+                                    进货总运费
+                                </th>
+                                <th>
+                                    出货总运费
+                                </th>
+                                <th>
+                                    现金余额
+                                </th>
+                                <tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for v in cash_info %}
+                                    <td>
+                                        {{ v }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h2>
+                        油卡信息：
+                    </h2>
+                    <div class="container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        面额（元）
+                                    </th>
+                                    <th>
+                                        已付数量（张）
+                                    </th>
+                                    <th>
+                                        余量（张）
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for card_info in cards_info %}
+                                <tr>
+                                    {% for v in card_info %}
+                                    <td>
+                                        {{ v }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                            </div>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="buttons">
-                        <a role="button" href="/work/list" class="btn btn-default">
+                        <a role="button" href="/work/list" class="btn btn-primary btn-lg">
                             返回列表
                         </a>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-1">
                 </div>
             </div>
             <br>
