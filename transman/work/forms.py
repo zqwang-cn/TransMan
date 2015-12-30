@@ -1,6 +1,7 @@
 #coding:utf-8
 from django import forms
 from .models import TransRec,Card,OutRec
+from django.contrib.auth.models import User,Permission
 
 class ScanForm(forms.Form):
     qrcode=forms.CharField(label=("二维码"),required=True)
@@ -74,8 +75,12 @@ class PayForm(forms.Form):
     payfor=forms.CharField(widget=forms.HiddenInput())
 
 class SearchForm(forms.Form):
-    def __init__(self,opscales,opaccounts,*args,**kwargs):
+    def __init__(self,*args,**kwargs):
         super(SearchForm,self).__init__(*args,**kwargs)
+        perm_scale=Permission.objects.get(codename='scale')
+        opscales=User.objects.filter(user_permissions=perm_scale)
+        perm_account=Permission.objects.get(codename='account')
+        opaccounts=User.objects.filter(user_permissions=perm_account)
         self.fields['opscale']=forms.ModelChoiceField(label='磅房操作员',queryset=opscales)
         self.fields['opaccount']=forms.ModelChoiceField(label='财务操作员',queryset=opaccounts)
     setoff_time_begin=forms.DateField(label='出发时间范围 从')

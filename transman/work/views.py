@@ -3,11 +3,10 @@ from django.shortcuts import render,redirect
 from .models import TransRec,Mine,Balance,Card,OutRec,CoalType,Scale
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
-from django.contrib.auth.models import User,Permission
 from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist,PermissionDenied
 from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm,SearchForm
-from django.db.models import Sum,F,Q
+from django.db.models import Sum,F
 
 def randqr():
     qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
@@ -18,19 +17,43 @@ def randqr():
 # Create your views here.
 @login_required
 def list(request):
+    all_recs=TransRec.objects
     user=request.user
-    if user.has_perm('work.account'):
-        all_recs=TransRec.objects.order_by('-id').all()
-        perm='account'
-    elif user.has_perm('work.mine'):
-        all_recs=TransRec.objects.filter(mine__user=user).order_by('-id')
+    if user.has_perm('work.mine'):
+        all_recs=all_recs.filter(mine__user=user)
         perm='mine'
     elif user.has_perm('work.scale'):
-        all_recs=TransRec.objects.filter(scale=user.userscaleinfo.scale).order_by('-id')
+        all_recs=all_recs.filter(scale=user.userscaleinfo.scale)
         perm='scale'
+    elif user.has_perm('work.account'):
+        perm='account'
     else:
         raise PermissionDenied
-        
+
+    setoff_time_begin=request.GET.get('setoff_time_begin')
+    setoff_time_end=request.GET.get('setoff_time_end')
+    car_no=request.GET.get('car_no')
+    opscale=request.GET.get('opscale')
+    opaccount=request.GET.get('opaccount')
+    if setoff_time_begin:
+        all_recs=all_recs.filter(arrive_time__gt=setoff_time_begin)
+    if setoff_time_end:
+        setoff_time_end+=' 23:59:59'
+        all_recs=all_recs.filter(arrive_time__lt=setoff_time_end)
+    if car_no:
+        all_recs=all_recs.filter(car_no=car_no)
+    if opscale:
+        all_recs=all_recs.filter(opscale=opscale)
+    if opaccount:
+        all_recs=all_recs.filter(opaccount=opaccount)
+
+    params=''
+    for k,v in request.GET.items():
+        if k!='page':
+            params+=k+'='+v+'&'
+
+    all_recs=all_recs.order_by('-id')
+
     paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
     try:
@@ -45,7 +68,11 @@ def list(request):
     if end>paginator.num_pages:end=paginator.num_pages
     pr=range(begin,end+1)
     
-    return render(request,'work/list.html',{'recs':recs,'perm':perm,'pr':pr})
+    return render(request,'work/list.html',{'recs':recs,'perm':perm,'pr':pr,'params':params})
+
+def search(request):
+    form=SearchForm()
+    return render(request,'work/search.html',{'form':form})
 
 def listout(request):
     user=request.user
@@ -372,11 +399,3 @@ def balance(request):
         'cash_info':cash_info,
         'coal_types':coal_types,
     })
-
-def search(request):
-    perm_scale=Permission.objects.get(codename='scale')
-    opscales=User.objects.filter(user_permissions=perm_scale)
-    perm_account=Permission.objects.get(codename='account')
-    opaccounts=User.objects.filter(user_permissions=perm_account)
-    form=SearchForm(opscales,opaccounts)
-    return render(request,'work/search.html',{'form':form})

@@ -161,19 +161,19 @@
                         <ul class="pagination">
                             {% if recs.has_previous %}
                             <li>
-                            <a href="?page={{recs.previous_page_number}}">
+                            <a href="?{{params}}page={{recs.previous_page_number}}">
                                 <span>&laquo;</span>
                             </a>
                             </li>
                             {% endif %}
                             {% for p in pr %}
                             <li {% if p == recs.number %}class="active"{% endif %}>
-                            <a href="?page={{p}}">{{p}}</a>
+                            <a href="?{{params}}page={{p}}">{{p}}</a>
                             </li>
                             {% endfor %}
                             {% if recs.has_next %}
                             <li>
-                            <a href="?page={{recs.next_page_number}}">
+                            <a href="?{{params}}page={{recs.next_page_number}}">
                                 <span>&raquo;</span>
                             </a>
                             </li>

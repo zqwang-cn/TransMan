@@ -23,8 +23,7 @@
                         搜索
                     </h1>
                     <br>
-                    <form role="form" action="/work/search" method="POST">
-                        {% csrf_token %}
+                    <form role="form" action="/work/list" method="GET">
                         {{form.as_p}}
                         <br>
                         <br>
