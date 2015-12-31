@@ -5,7 +5,7 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import random,string,datetime
 from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist,PermissionDenied
-from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm,SearchForm
+from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm,SearchForm,SearchOutForm
 from django.db.models import Sum,F
 
 def randqr():
@@ -32,14 +32,21 @@ def list(request):
 
     setoff_time_begin=request.GET.get('setoff_time_begin')
     setoff_time_end=request.GET.get('setoff_time_end')
+    arrive_time_begin=request.GET.get('arrive_time_begin')
+    arrive_time_end=request.GET.get('arrive_time_end')
     car_no=request.GET.get('car_no')
     opscale=request.GET.get('opscale')
     opaccount=request.GET.get('opaccount')
     if setoff_time_begin:
-        all_recs=all_recs.filter(arrive_time__gt=setoff_time_begin)
+        all_recs=all_recs.filter(setoff_time__gt=setoff_time_begin)
     if setoff_time_end:
         setoff_time_end+=' 23:59:59'
-        all_recs=all_recs.filter(arrive_time__lt=setoff_time_end)
+        all_recs=all_recs.filter(setoff_time__lt=setoff_time_end)
+    if arrive_time_begin:
+        all_recs=all_recs.filter(arrive_time__gt=arrive_time_begin)
+    if arrive_time_end:
+        arrive_time_end+=' 23:59:59'
+        all_recs=all_recs.filter(arrive_time__lt=arrive_time_end)
     if car_no:
         all_recs=all_recs.filter(car_no=car_no)
     if opscale:
@@ -68,43 +75,52 @@ def list(request):
     if end>paginator.num_pages:end=paginator.num_pages
     pr=range(begin,end+1)
     
-    return render(request,'work/list.html',{'recs':recs,'perm':perm,'pr':pr,'params':params})
-
-def search(request):
     form=SearchForm()
-    return render(request,'work/search.html',{'form':form})
+    return render(request,'work/list.html',{'recs':recs,'perm':perm,'pr':pr,'params':params,'form':form})
 
 def listout(request):
+    all_recs=OutRec.objects
     user=request.user
-    qrcode=request.GET.get('qrcode')
     if user.has_perm('work.scale'):
         perm='scale'
-        if qrcode:
-            all_recs=OutRec.objects.filter(scale=request.user.userscaleinfo.scale,qrcode=qrcode).order_by('-id')
-        else:
-            all_recs=OutRec.objects.filter(scale=request.user.userscaleinfo.scale).order_by('-id')
-        payed=None
-        sum=None
+        all_recs=all_recs.filter(scale=request.user.userscaleinfo.scale)
     elif user.has_perm('work.account'):
         perm='account'
-        if qrcode:
-            all_recs=OutRec.objects.filter(qrcode=qrcode).order_by('-id')
-            if not all_recs.exists():
-                return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
-            if all_recs[0].payed:
-                payed=True
-                sum=None
-            else:
-                payed=False
-                sum=0.0
-                for rec in all_recs:
-                    sum+=rec.unit*rec.amount
-        else:
-            all_recs=OutRec.objects.order_by('-id').all()
-            payed=None
-            sum=None
     else:
         raise PermissionDenied
+
+    payed=None
+    sum=None
+    qrcode=request.GET.get('qrcode')
+    if qrcode:
+        all_recs=all_recs.filter(qrcode=qrcode)
+        if not all_recs.exists():
+            return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
+        if all_recs[0].payed:
+            payed=True
+        else:
+            payed=False
+            sum=0.0
+            for rec in all_recs:
+                sum+=rec.unit*rec.amount
+
+    setoff_time_begin=request.GET.get('setoff_time_begin')
+    setoff_time_end=request.GET.get('setoff_time_end')
+    car_no=request.GET.get('car_no')
+    if setoff_time_begin:
+        all_recs=all_recs.filter(setoff_time__gt=setoff_time_begin)
+    if setoff_time_end:
+        setoff_time_end+=' 23:59:59'
+        all_recs=all_recs.filter(setoff_time__lt=setoff_time_end)
+    if car_no:
+        all_recs=all_recs.filter(car_no=car_no)
+
+    all_recs=all_recs.order_by('-id')
+
+    params=''
+    for k,v in request.GET.items():
+        if k!='page':
+            params+=k+'='+v+'&'
 
     paginator=Paginator(all_recs,10)
     page=request.GET.get('page')
@@ -119,7 +135,9 @@ def listout(request):
     end=recs.number+5/2
     if end>paginator.num_pages:end=paginator.num_pages
     pr=range(begin,end+1)
-    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed,'pr':pr,'sum':sum})
+
+    form=SearchOutForm()
+    return render(request,'work/listout.html',{'recs':recs,'qrcode':qrcode,'perm':perm,'payed':payed,'pr':pr,'sum':sum,'params':params,'form':form})
 
 @permission_required('work.mine',raise_exception=True)
 def new(request):

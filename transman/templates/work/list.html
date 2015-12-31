@@ -8,6 +8,7 @@
         <title>进货记录</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/bootstrap-datepicker.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
 
     </head>
@@ -181,10 +182,28 @@
                         </ul>
                     </div>
 
+                    <form role="form" action="/work/list" method="GET" class="navbar-form text-center">
+                        {{form}}
+                        <button type="submit" class="btn btn-success">
+                            搜索
+                        </button>
+                    </form>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+
                     <div class="buttons">
                         {% if perm == "scale" or perm == "account"%}
                         <a role="button" href="listout" class="btn btn-primary btn-lg left">
                             出货管理
+                        </a>
+                        {% endif %}
+
+                        {% if params %}
+                        <a role="button" href="list" class="btn btn-primary btn-lg left">
+                            全部进货记录
                         </a>
                         {% endif %}
                         
@@ -221,6 +240,8 @@
         </div>
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/bootstrap-datepicker.min.js"></script>
+        <script src="/static/bootstrap-datepicker.zh-CN.min.js"></script>
         <script src="/static/script.js"></script>
     </body>
 </html>

@@ -8,6 +8,7 @@
         <title>查看记录</title>
 
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/bootstrap-datepicker.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
 
     </head>
@@ -53,8 +54,6 @@
                                 <th>
                                     已付款
                                 </th>
-                                <!--<th>
-                                </th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -87,11 +86,6 @@
                                 <td>
                                     {{ rec.payed|yesno:"是,否" }}
                                 </td>
-                                <!--<td>
-                                    <a role="button" href="listout?qrcode={{rec.qrcode}}" class="btn btn-default">
-                                        查看所有
-                                    </a>
-                                </td>-->
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -102,19 +96,19 @@
                     <ul class="pagination">
                         {% if recs.has_previous %}
                         <li>
-                            <a href="?page={{recs.previous_page_number}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">
+                            <a href="?{{params}}page={{recs.previous_page_number}}">
                                 <span>&laquo;</span>
                             </a>
                         </li>
                         {% endif %}
                         {% for p in pr %}
                         <li {% if p == recs.number %}class="active"{% endif %}>
-                            <a href="?page={{p}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">{{p}}</a>
+                            <a href="?{{params}}page={{p}}">{{p}}</a>
                         </li>
                         {% endfor %}
                         {% if recs.has_next %}
                         <li>
-                            <a href="?page={{recs.next_page_number}}{% if qrcode %}&qrcode={{qrcode}}{% endif %}">
+                            <a href="?{{params}}page={{recs.next_page_number}}">
                                 <span>&raquo;</span>
                             </a>
                         </li>
@@ -130,12 +124,23 @@
                     {% endif %}
                     <br>
 
+                    <form role="form" method="GET" action="/work/listout" class="navbar-form text-center">
+                        {{form}}
+                        <button type="submit" class="btn btn-success">
+                            搜索
+                        </button>
+                    </form>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+
                     <div class="buttons">
                         <a role="button" href="list" class="btn btn-primary btn-lg left">
                             进货管理
                         </a>
 
-                        {% if qrcode %}
+                        {% if params %}
                         <a role="button" href="listout" class="btn btn-primary btn-lg left">
                             全部出货记录
                         </a>
@@ -171,6 +176,8 @@
         </div>
         <script src="/static/jquery.min.js"></script>
         <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/bootstrap-datepicker.min.js"></script>
+        <script src="/static/bootstrap-datepicker.zh-CN.min.js"></script>
         <script src="/static/script.js"></script>
     </body>
 </html>

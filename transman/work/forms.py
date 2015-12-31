@@ -83,6 +83,13 @@ class SearchForm(forms.Form):
         opaccounts=User.objects.filter(user_permissions=perm_account)
         self.fields['opscale']=forms.ModelChoiceField(label='磅房操作员',queryset=opscales)
         self.fields['opaccount']=forms.ModelChoiceField(label='财务操作员',queryset=opaccounts)
-    setoff_time_begin=forms.DateField(label='出发时间范围 从')
-    setoff_time_end=forms.DateField(label='至')
+    setoff_time_begin=forms.DateField(label='出发时间从',widget=forms.TextInput(attrs={'class':'datepicker'}))
+    setoff_time_end=forms.DateField(label='至',widget=forms.TextInput(attrs={'class':'datepicker'}))
+    arrive_time_begin=forms.DateField(label='到磅时间从',widget=forms.TextInput(attrs={'class':'datepicker'}))
+    arrive_time_end=forms.DateField(label='至',widget=forms.TextInput(attrs={'class':'datepicker'}))
+    car_no=forms.CharField(label='车牌号',max_length=10)
+
+class SearchOutForm(forms.Form):
+    setoff_time_begin=forms.DateField(label='出发时间从',widget=forms.TextInput(attrs={'class':'datepicker'}))
+    setoff_time_end=forms.DateField(label='至',widget=forms.TextInput(attrs={'class':'datepicker'}))
     car_no=forms.CharField(label='车牌号',max_length=10)
