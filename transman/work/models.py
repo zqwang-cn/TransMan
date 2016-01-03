@@ -38,17 +38,6 @@ class CoalType(models.Model):
     def __unicode__(self):
         return self.name
 
-#class Shipment(models.Model):
-#    coal_type=models.ForeignKey(CoalType,verbose_name='煤类型')
-#    mine=models.ForeignKey(Mine,verbose_name='出发煤矿')
-#    scale=models.ForeignKey(Scale,verbose_name='到达磅房')
-#    unit=models.FloatField('运费单价')
-#    class Meta:
-#        verbose_name='运费'
-#        verbose_name_plural='运费'
-#    def __unicode__(self):
-#        return '_'.join([self.coal_type.name,self.mine.name,self.scale.name,str(self.unit)])
-
 class Card(models.Model):
     value=models.PositiveIntegerField('价值')
     balance=models.PositiveIntegerField('余量',default=0)
