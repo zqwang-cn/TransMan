@@ -4,6 +4,9 @@ from .models import TransRec,Card,OutRec
 from django.contrib.auth.models import User,Permission
 
 class ScanForm(forms.Form):
+    def __init__(self,*args,**kwargs):
+        super(ScanForm,self).__init__(*args,**kwargs)
+        self.fields['qrcode'].widget.attrs.update({'autofocus': 'true'})
     qrcode=forms.CharField(label=("二维码"),required=True)
 
 class NewForm(forms.ModelForm):

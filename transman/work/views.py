@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import permission_required,login_required
 from django.core.exceptions import ObjectDoesNotExist,PermissionDenied
 from .forms import ScanForm,NewForm,ArriveForm,SelectCardForm,PayForm,OutForm,SearchForm,SearchOutForm
 from django.db.models import Sum,F
+from django.http import HttpResponse
+import xlwt
 
 def randqr():
     qrcode=''.join([random.choice(string.digits+string.lowercase) for i in range(10)])
@@ -53,6 +55,41 @@ def list(request):
         all_recs=all_recs.filter(opscale=opscale)
     if opaccount:
         all_recs=all_recs.filter(opaccount=opaccount)
+
+
+    download=request.GET.get('download')
+    if download:
+        xls=xlwt.Workbook(encoding='utf8',style_compression={})
+        sheet=xls.add_sheet('Sheet1')
+        style=xlwt.easyxf('align: horiz right')
+        labels=['ID','车牌号','驾驶员姓名','联系方式','出发煤矿','煤类型','到达磅房','出发时间','矿发量','实收量','单价','到达时间','总价']
+        for i in range(len(labels)):
+            sheet.write(0,i,labels[i],style=style)
+        row=1
+        sum=0.0
+        for rec in all_recs.all():
+            sheet.write(row,0,rec.id,style=style)
+            sheet.write(row,1,rec.car_no,style=style)
+            sheet.write(row,2,rec.driver_name,style=style)
+            sheet.write(row,3,rec.contact_info,style=style)
+            sheet.write(row,4,rec.mine.name,style=style)
+            sheet.write(row,5,rec.coal_type.name,style=style)
+            sheet.write(row,6,rec.scale.name,style=style)
+            sheet.write(row,7,rec.setoff_time.strftime('%Y-%m-%d %H:%M:%S'),style=style)
+            sheet.write(row,8,rec.setoff_amount,style=style)
+            sheet.write(row,9,rec.arrive_amount,style=style)
+            sheet.write(row,10,rec.unit,style=style)
+            sheet.write(row,11,rec.arrive_time.strftime('%Y-%m-%d %H:%M:%S'),style=style)
+            total=(rec.unit*rec.arrive_amount)//10*10
+            sheet.write(row,12,total,style=style)
+            sum+=total
+            row+=1
+        sheet.write(row,0,'合计',style=style)
+        sheet.write(row,12,sum,style=style)
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=list.xls'
+        xls.save(response)
+        return response
 
     params=''
     for k,v in request.GET.items():
@@ -103,6 +140,7 @@ def listout(request):
             sum=0.0
             for rec in all_recs:
                 sum+=rec.unit*rec.amount
+            sum=sum//10*10
 
     setoff_time_begin=request.GET.get('setoff_time_begin')
     setoff_time_end=request.GET.get('setoff_time_end')
@@ -214,6 +252,7 @@ def payout(request):
             sum+=rec.unit*rec.amount
             rec.payed=True
             rec.save()
+        sum=sum//10*10
         balance=Balance.objects.get(pk=1)
         balance.balance-=sum
         balance.save()
@@ -223,6 +262,12 @@ def payout(request):
 
 @login_required
 def scan(request):
+    import tempfile
+    f=tempfile.NamedTemporaryFile()
+    f.write('abc')
+    response=HttpResponse('abc',content_type='text/plain')
+    response['Content-Disposition']='attachment; filename=temp.txt'
+    return response
     user=request.user
     if user.has_perm('work.scale') or user.has_perm('work.account'):
         action=request.GET.get('action')
@@ -308,7 +353,7 @@ def pay(request):
             return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
         if not rec.card:
             return redirect('/work/selectCard?qrcode='+str(qrcode))
-        total=rec.unit*rec.arrive_amount
+        total=(rec.unit*rec.arrive_amount)//10*10
         card=rec.card.value
         cash=rec.cash
         form=PayForm(initial={'qrcode':qrcode})
@@ -324,7 +369,7 @@ def selectCard(request):
                 rec=TransRec.objects.get(qrcode=qrcode)
             except ObjectDoesNotExist:
                 return render(request,'work/info.html',{'title':'错误','content':'无法识别此二维码'})
-            total=rec.unit*rec.arrive_amount
+            total=(rec.unit*rec.arrive_amount)//10*10
             card=form.cleaned_data['card']
             if card.value>total:
                 return render(request,'work/info.html',{'title':'错误','content':'付款多于总运费'})
@@ -346,7 +391,7 @@ def selectCard(request):
             return render(request,'work/info.html',{'title':'错误','content':'未到货称重'})
         if rec.card:
             return redirect('/work/pay?qrcode='+str(qrcode))
-        total=rec.unit*rec.arrive_amount
+        total=(rec.unit*rec.arrive_amount)//10*10
         form=SelectCardForm(initial={'qrcode':qrcode})
         return render(request,'work/selectCard.html',{'form':form,'rec':rec,'total':total})
 

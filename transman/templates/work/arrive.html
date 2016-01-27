@@ -19,50 +19,34 @@
                     <h1>
                         详细信息
                     </h1>
-                    <div class="panel-group text-center">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                车牌号：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.car_no}}
-                            </div>
-                            <div class="panel-heading">
-                                驾驶员姓名：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.driver_name}}
-                            </div>
-                            <div class="panel-heading">
-                                联系方式：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.contact_info}}
-                            </div>
-                            <div class="panel-heading">
-                                发货煤矿：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.mine.name}}
-                            </div>
-                            <div class="panel-heading">
-                                煤类型：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.coal_type.name}}
-                            </div>
-                            <div class="panel-heading">
-                                目标磅房：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.scale.name}}
-                            </div>
-                            <div class="panel-heading">
-                                单价：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.unit}}
-                            </div>
+                    <div class="list-group text-center">
+                        <div class="list-group-item">
+                            车牌号：
+                            {{rec.car_no}}
+                        </div>
+                        <div class="list-group-item">
+                            驾驶员姓名：
+                            {{rec.driver_name}}
+                        </div>
+                        <div class="list-group-item">
+                            联系方式：
+                            {{rec.contact_info}}
+                        </div>
+                        <div class="list-group-item">
+                            发货煤矿：
+                            {{rec.mine.name}}
+                        </div>
+                        <div class="list-group-item">
+                            煤类型：
+                            {{rec.coal_type.name}}
+                        </div>
+                        <div class="list-group-item">
+                            目标磅房：
+                            {{rec.scale.name}}
+                        </div>
+                        <div class="list-group-item">
+                            单价：
+                            {{rec.unit}}
                         </div>
                     </div>
                     {% if not rec.arrive_amount %}

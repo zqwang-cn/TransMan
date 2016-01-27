@@ -21,124 +21,96 @@
                     <h1 class="text-center">
                         详细信息
                     </h1>
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                车牌号：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.car_no}}
-                            </div>
-                            <div class="panel-heading">
-                                驾驶员姓名：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.driver_name}}
-                            </div>
-                            <div class="panel-heading">
-                                联系方式：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.contact_info}}
-                            </div>
-                            <div class="panel-heading">
-                                发货煤矿：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.mine.name}}
-                            </div>
-                            <div class="panel-heading">
-                                煤类型：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.coal_type.name}}
-                            </div>
-                            <div class="panel-heading">
-                                目标磅房：
-                            </div>
-                            <div class="panel-body">
-                                {{rec.scale.name}}
-                            </div>
-                            <div class="panel-heading">
-                                出发时间：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
-                            </div>
-                            <div class="panel-heading">
-                                矿发量：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.setoff_amount }}
-                            </div>
-                            <div class="panel-heading">
-                                实收量：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.arrive_amount }}
-                            </div>
-                            <div class="panel-heading">
-                                到达时间：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
-                            </div>
-                            <div class="panel-heading">
-                                总运费：
-                            </div>
-                            <div class="panel-body">
-                                {{ total }}
-                            </div>
-                            <div class="panel-heading">
-                                应付油卡：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.card.value }}
-                            </div>
-                            <div class="panel-heading">
-                                油卡已付：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.card_payed|yesno:"是,否" }}
-                            </div>
-                            <div class="panel-heading">
-                                应付现金：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.cash }}
-                            </div>
-                            <div class="panel-heading">
-                                现金已付：
-                            </div>
-                            <div class="panel-body">
-                                {{ rec.cash_payed|yesno:"是,否" }}
-                            </div>
+                    <div class="list-group text-center">
+                        <div class="list-group-item">
+                            车牌号：
+                            {{rec.car_no}}
+                        </div>
+                        <div class="list-group-item">
+                            驾驶员姓名：
+                            {{rec.driver_name}}
+                        </div>
+                        <div class="list-group-item">
+                            联系方式：
+                            {{rec.contact_info}}
+                        </div>
+                        <div class="list-group-item">
+                            发货煤矿：
+                            {{rec.mine.name}}
+                        </div>
+                        <div class="list-group-item">
+                            煤类型：
+                            {{rec.coal_type.name}}
+                        </div>
+                        <div class="list-group-item">
+                            目标磅房：
+                            {{rec.scale.name}}
+                        </div>
+                        <div class="list-group-item">
+                            出发时间：
+                            {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
+                        </div>
+                        <div class="list-group-item">
+                            矿发量：
+                            {{ rec.setoff_amount }}
+                        </div>
+                        <div class="list-group-item">
+                            实收量：
+                            {{ rec.arrive_amount }}
+                        </div>
+                        <div class="list-group-item">
+                            到达时间：
+                            {{ rec.arrive_time|date:"Y-m-d H:i:s" }}
+                        </div>
+                        <div class="list-group-item">
+                            总运费：
+                            {{ total }}
+                        </div>
+                        <div class="list-group-item">
+                            应付油卡：
+                            {{ rec.card.value }}
+                        </div>
+                        <div class="list-group-item">
+                            油卡已付：
+                            {% autoescape off %}
+                            {{ rec.card_payed|yesno:"<font color='blue'>是</font>,<font color='red'>否</font>" }}
+                            {% endautoescape %}
+                        </div>
+                        <div class="list-group-item">
+                            应付现金：
+                            {{ rec.cash }}
+                        </div>
+                        <div class="list-group-item">
+                            现金已付：
+                            {% autoescape off %}
+                            {{ rec.cash_payed|yesno:"<font color='blue'>是</font>,<font color='red'>否</font>" }}
+                            {% endautoescape %}
                         </div>
                     </div>
-                        <form role="form" id="form" action="/work/pay" method="POST">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="buttons">
-                                {% if not rec.card_payed %}
-                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('card');$('#form').submit()">
-                                    付油卡
-                                </button>
-                                {% endif %}
-                                {% if not rec.cash_payed %}
-                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('cash');$('#form').submit()">
-                                    付现金
-                                </button>
-                                {% endif %}
-                                {% if not rec.card_payed and not rec.cash_payed %}
-                                <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('both');$('#form').submit()">
-                                    付油卡和现金
-                                </button>
-                                {% endif %}
-                                <a role="button" href="list" class="btn btn-primary btn-lg">
-                                    返回列表
-                                </a>
-                            </div>
-                        </form>
+                    <form role="form" id="form" action="/work/pay" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="buttons">
+                            {% if not rec.card_payed %}
+                            <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('card');$('#form').submit()">
+                                付油卡
+                            </button>
+                            {% endif %}
+                            {% if not rec.cash_payed %}
+                            <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('cash');$('#form').submit()">
+                                付现金
+                            </button>
+                            {% endif %}
+                            {% if not rec.card_payed and not rec.cash_payed %}
+                            <button type="button" class="btn btn-primary btn-lg" onclick="$('#id_payfor').val('both');$('#form').submit()">
+                                付油卡和现金
+                            </button>
+                            {% endif %}
+                            <a role="button" href="list" class="btn btn-primary btn-lg">
+                                返回列表
+                            </a>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-4">
                 </div>

@@ -133,16 +133,20 @@
                                     </td>
 
                                     <td>
-                                        {{ rec.card.value|default:"---" }}
+                                        {{ rec.card|default_if_none:"---" }}
                                     </td>
                                     <td>
-                                        {{ rec.card_payed|yesno:"是,否" }}
+                                        {% autoescape off %}
+                                        {{ rec.card_payed|yesno:"<font color='blue'>是</font>,<font color='red'>否</font>" }}
+                                        {% endautoescape %}
                                     </td>
                                     <td>
                                         {{ rec.cash|default:"---" }}
                                     </td>
                                     <td>
-                                        {{ rec.cash_payed|yesno:"是,否" }}
+                                        {% autoescape off %}
+                                        {{ rec.cash_payed|yesno:"<font color='blue'>是</font>,<font color='red'>否</font>" }}
+                                        {% endautoescape %}
                                     </td>
                                     <td>
                                         {{ rec.opaccount.username|default:"---" }}
@@ -219,6 +223,9 @@
                         </a>
                         <a role="button" href="scan?action=selectCard" class="btn btn-primary btn-lg">
                             扫二维码付款
+                        </a>
+                        <a role="button" href="?{{params}}download=true" class="btn btn-primary btn-lg">
+                            下载列表
                         </a>
                         {% endif %}
 

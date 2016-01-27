@@ -84,7 +84,9 @@
                                     {{ rec.setoff_time|date:"Y-m-d H:i:s" }}
                                 </td>
                                 <td>
-                                    {{ rec.payed|yesno:"是,否" }}
+                                    {% autoescape off %}
+                                    {{ rec.payed|yesno:"<font color='blue'>是</font>,<font color='red'>否</font>" }}
+                                    {% endautoescape %}
                                 </td>
                             </tr>
                             {% endfor %}
