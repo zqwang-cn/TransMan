@@ -76,13 +76,19 @@ def list(request):
             sheet.write(row,5,rec.coal_type.name,style=style)
             sheet.write(row,6,rec.scale.name,style=style)
             sheet.write(row,7,rec.setoff_time.strftime('%Y-%m-%d %H:%M:%S'),style=style)
-            sheet.write(row,8,rec.setoff_amount,style=style)
-            sheet.write(row,9,rec.arrive_amount,style=style)
+            setoff_amount=rec.setoff_amount if rec.setoff_amount else '---'
+            sheet.write(row,8,setoff_amount,style=style)
+            arrive_amount=rec.arrive_amount if rec.arrive_amount else '---'
+            sheet.write(row,9,arrive_amount,style=style)
             sheet.write(row,10,rec.unit,style=style)
-            sheet.write(row,11,rec.arrive_time.strftime('%Y-%m-%d %H:%M:%S'),style=style)
-            total=(rec.unit*rec.arrive_amount)//10*10
+            arrive_time=rec.arrive_time.strftime('%Y-%m-%d %H:%M:%S') if rec.arrive_time else '-----'
+            sheet.write(row,11,arrive_time,style=style)
+            if rec.arrive_amount:
+                total=(rec.unit*rec.arrive_amount)//10*10
+                sum+=total
+            else:
+                total='---'
             sheet.write(row,12,total,style=style)
-            sum+=total
             row+=1
         sheet.write(row,0,'合计',style=style)
         sheet.write(row,12,sum,style=style)
