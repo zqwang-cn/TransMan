@@ -17,3 +17,8 @@ table {
 .right {
     float:right;
 }
+
+p {
+    font-size: 80%;
+    line-height: 40%;
+}
