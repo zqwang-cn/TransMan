@@ -268,12 +268,6 @@ def payout(request):
 
 @login_required
 def scan(request):
-    import tempfile
-    f=tempfile.NamedTemporaryFile()
-    f.write('abc')
-    response=HttpResponse('abc',content_type='text/plain')
-    response['Content-Disposition']='attachment; filename=temp.txt'
-    return response
     user=request.user
     if user.has_perm('work.scale') or user.has_perm('work.account'):
         action=request.GET.get('action')
