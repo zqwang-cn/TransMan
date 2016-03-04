@@ -56,27 +56,31 @@ class Balance(models.Model):
         return str(self.balance)
 
 class TransRec(models.Model):
-    car_no=models.CharField(max_length=10)
-    driver_name=models.CharField(max_length=10)
-    contact_info=models.CharField(max_length=20)
-    mine=models.ForeignKey(Mine)
-    coal_type=models.ForeignKey(CoalType)
-    scale=models.ForeignKey(Scale)
-    setoff_time=models.DateTimeField(auto_now_add=True)
-    qrcode=models.CharField(max_length=10,unique=True)
+    car_no=models.CharField('车牌号',max_length=10)
+    driver_name=models.CharField('驾驶员姓名',max_length=10)
+    contact_info=models.CharField('联系方式',max_length=20)
+    mine=models.ForeignKey(Mine,verbose_name='出发煤矿')
+    coal_type=models.ForeignKey(CoalType,verbose_name='煤类型')
+    scale=models.ForeignKey(Scale,verbose_name='到达磅房')
+    setoff_time=models.DateTimeField('出发时间',auto_now_add=True)
+    qrcode=models.CharField('二维码',max_length=10,unique=True)
 
-    setoff_amount=models.FloatField(null=True)
-    arrive_amount=models.FloatField(null=True)
-    unit=models.FloatField(null=True)
-    opscale=models.ForeignKey(User,null=True,related_name='opscale')
-    arrive_time=models.DateTimeField(null=True)
+    setoff_amount=models.FloatField('矿发量',null=True)
+    arrive_amount=models.FloatField('实收量',null=True)
+    unit=models.FloatField('单价',null=True)
+    opscale=models.ForeignKey(User,null=True,related_name='opscale',verbose_name='磅房操作员')
+    arrive_time=models.DateTimeField('到达时间',null=True)
 
-    card=models.ForeignKey(Card,null=True)
-    cash=models.FloatField(null=True)
-    card_payed=models.BooleanField(default=False)
-    cash_payed=models.BooleanField(default=False)
-    opaccount=models.ForeignKey(User,null=True,related_name='opaccount')
+    card=models.ForeignKey(Card,null=True,verbose_name='油卡')
+    cash=models.FloatField(null=True,verbose_name='现金')
+    card_payed=models.BooleanField(default=False,verbose_name='油卡已付')
+    cash_payed=models.BooleanField(default=False,verbose_name='现金已付')
+    opaccount=models.ForeignKey(User,null=True,related_name='opaccount',verbose_name='账务操作员')
+    def __unicode__(self):
+        return self.car_no+' '+self.setoff_time.strftime('%Y-%m-%d %H:%M:%S')
     class Meta:
+        verbose_name='进货记录'
+        verbose_name_plural='进货记录'
         permissions=(
             ('mine','mine'),
             ('scale','scale'),
@@ -84,12 +88,17 @@ class TransRec(models.Model):
         )
 
 class OutRec(models.Model):
-    car_no=models.CharField(max_length=10,blank=True)
-    driver_name=models.CharField(max_length=10,blank=True)
-    contact_info=models.CharField(max_length=20,blank=True)
-    scale=models.ForeignKey(Scale)
-    unit=models.FloatField()
-    amount=models.FloatField()
-    setoff_time=models.DateTimeField(auto_now_add=True)
-    qrcode=models.CharField(max_length=10,blank=True)
-    payed=models.BooleanField(default=False)
+    car_no=models.CharField('车牌号',max_length=10,blank=True)
+    driver_name=models.CharField('驾驶员姓名',max_length=10,blank=True)
+    contact_info=models.CharField('联系方式',max_length=20,blank=True)
+    scale=models.ForeignKey(Scale,verbose_name='出发磅房')
+    unit=models.FloatField('单价')
+    amount=models.FloatField('数量')
+    setoff_time=models.DateTimeField('出发时间',auto_now_add=True)
+    qrcode=models.CharField('二维码',max_length=10,blank=True)
+    payed=models.BooleanField('已付款',default=False)
+    def __unicode__(self):
+        return self.car_no+' '+self.setoff_time.strftime('%Y-%m-%d %H:%M:%S')
+    class Meta:
+        verbose_name='出货记录'
+        verbose_name_plural='出货记录'
