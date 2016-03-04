@@ -77,7 +77,7 @@ class TransRec(models.Model):
     cash_payed=models.BooleanField(default=False,verbose_name='现金已付')
     opaccount=models.ForeignKey(User,null=True,related_name='opaccount',verbose_name='账务操作员')
     def __unicode__(self):
-        return self.car_no+' '+self.setoff_time.strftime('%Y-%m-%d %H:%M:%S')
+        return self.car_no+' '+self.driver_name
     class Meta:
         verbose_name='进货记录'
         verbose_name_plural='进货记录'
@@ -98,7 +98,7 @@ class OutRec(models.Model):
     qrcode=models.CharField('二维码',max_length=10,blank=True)
     payed=models.BooleanField('已付款',default=False)
     def __unicode__(self):
-        return self.car_no+' '+self.setoff_time.strftime('%Y-%m-%d %H:%M:%S')
+        return self.car_no+' '+self.driver_name
     class Meta:
         verbose_name='出货记录'
         verbose_name_plural='出货记录'
